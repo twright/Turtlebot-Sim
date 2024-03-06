@@ -1,0 +1,67 @@
+services:
+  base:
+    image: turtlebot4:base
+    build:
+      context: .
+      target: base
+    # command: tmux
+    stdin_open: true
+    ipc: host
+    volumes:
+      - rosdata:/root/.ros
+      - gazebodata:/root/.gazebo
+      - ignitiondata:/root/.ignition
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    network_mode: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+  dev:
+    extends: base
+    image: turtlebot4:dev
+    build:
+      context: .
+      target: dev
+      args:
+        - UID=${UID:-1000}
+        - GID=${UID:-1000}
+        - USERNAME=${USERNAME:-devuser}
+    user: ${USERNAME:-devuser}
+    command: sleep infinity
+  # devshell:
+  #   depends_on: [ dev ]
+  #   image: turtlebot4:devshell
+  #   build:
+  #     context: .
+  #     target: dev
+  #     args:
+  #       - UID=${UID:-1000}
+  #       - GID=${UID:-1000}
+  #       - USERNAME=${USERNAME:-devuser}
+  #   user: ${USERNAME:-devuser}
+  #   command: /bin/bash
+  slam:
+    extends: base
+    command: ros2 launch turtlebot4_ignition_bringup turtlebot4_ignition.launch.py slam:=true nav2:=true rviz:=true
+  nvidia-smi:
+    extends: base
+    command: nvidia-smi
+  glxgears:
+    extends: base
+    command: glxgears
+  shell:
+    extends: base
+    command: tmux
+
+volumes:
+  rosdata:
+  gazebodata:
+  ignitiondata:

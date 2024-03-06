@@ -1,0 +1,22 @@
+{
+  "name": "RoboSapiens WP3 Turtlebot",
+  "dockerComposeFile": "../docker-compose.yaml",
+  "service": "dev",
+  "runServices": [
+    "dev"
+  ],
+  "workspaceFolder": "/ws",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/bin/bash"
+          }
+        }
+      }
+    }
+  }
+}
