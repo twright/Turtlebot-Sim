@@ -12,5 +12,10 @@ then
   # echo "Sourced TurtleBot4 base workspace"
 fi
 
+if [ "$EUID" -gt 0 ]; then
+  sudo chown -R ${UID}:${UID} ~/.ros
+  sudo chown -R ${UID}:${UID} ~/.ignition
+fi
+
 # Execute the command passed into this entrypoint
 exec "$@"

@@ -50,12 +50,17 @@ RUN groupadd --gid $GID $USERNAME \
     && chown -R ${UID}:${GID} /home/${USERNAME}
 
 # Set the ownership of the overlay workspace to the new user
-RUN chown -R ${UID}:${GID} /ws/
+RUN chown -R ${UID}:${GID} /ws
 
 RUN groupadd fuse \
     && usermod -aG fuse ${USERNAME}
 
 # Set the user and source entrypoint in the user's .bashrc file
+RUN echo Defaults secure_path = /opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin > /etc/sudoers.d/secure_path \
+    && chmod 0440 /etc/sudoers.d/secure_path
+
+RUN echo "source /opt/entrypoint.sh" >> /root/.profile
 USER ${USERNAME}
+# entrypoint drops privs
 RUN echo "source /opt/entrypoint.sh" >> /home/${USERNAME}/.bashrc
 
