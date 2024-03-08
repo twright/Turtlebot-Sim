@@ -1,12 +1,15 @@
 {
     "name": "RoboSapiens WP3 Turtlebot (nogpu)",
-    "dockerComposeFile": "../../docker-compose.yaml",
+    "dockerComposeFile": "../../docker/docker-compose.yaml",
     "service": "dev",
     "runServices": [
         "dev"
     ],
     "workspaceFolder": "/ws",
     "shutdownAction": "stopCompose",
+    "mounts": [
+        "source=${localWorkspaceFolder}/,target=/ws,type=bind,consistency=cached"
+    ],
     "customizations": {
         "vscode": {
             "settings": {

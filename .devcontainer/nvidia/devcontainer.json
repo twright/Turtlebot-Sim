@@ -1,12 +1,15 @@
 {
   "name": "RoboSapiens WP3 Turtlebot (nvidia)",
-  "dockerComposeFile": "../../docker-compose.yaml",
+  "dockerComposeFile": "../../docker/docker-compose.yaml",
   "service": "devnvidia",
   "runServices": [
     "devnvidia"
   ],
   "workspaceFolder": "/ws",
   "shutdownAction": "stopCompose",
+  "mounts": [
+    "source=${localWorkspaceFolder}/,target=/ws,type=bind,consistency=cached"
+  ],
   "customizations": {
     "vscode": {
       "settings": {
