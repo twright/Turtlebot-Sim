@@ -2,7 +2,7 @@
 # Basic entrypoint for ROS / Colcon Docker containers
 
 # Source ROS 2
-source /opt/ros/${ROS_DISTRO}/setup.bash
+source /opt/ros/humble/setup.bash
 # echo "Sourced ROS 2 ${ROS_DISTRO}"
 
 # Source the base workspace, if built

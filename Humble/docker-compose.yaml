@@ -14,13 +14,6 @@ services:
       - DISPLAY=${DISPLAY}
       - NVIDIA_DRIVER_CAPABILITIES=all
     network_mode: host
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
   dev:
     extends: base
     image: turtlebot4:dev
@@ -39,6 +32,16 @@ services:
       - ignitiondata:/root/.ignition
       - rosdata:/root/.ros
       - ${XAUTHORITY:-$HOME/.Xauthority}:/home/${USERNAME:-devuser}/.Xauthority
+      - /dev/dri:/dev/dri
+  devnvidia:
+    extends: dev
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
 
 volumes:
   rosuserdata:

@@ -61,6 +61,5 @@ RUN echo Defaults secure_path = /opt/ros/humble/bin:/usr/local/sbin:/usr/local/b
 
 RUN echo "source /opt/entrypoint.sh" >> /root/.profile
 USER ${USERNAME}
-# entrypoint drops privs
 RUN echo "source /opt/entrypoint.sh" >> /home/${USERNAME}/.bashrc
 

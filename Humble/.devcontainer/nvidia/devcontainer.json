@@ -1,9 +1,9 @@
 {
-  "name": "RoboSapiens WP3 Turtlebot",
-  "dockerComposeFile": "../docker-compose.yaml",
-  "service": "dev",
+  "name": "RoboSapiens WP3 Turtlebot (nvidia)",
+  "dockerComposeFile": "../../docker-compose.yaml",
+  "service": "devnvidia",
   "runServices": [
-    "dev"
+    "devnvidia"
   ],
   "workspaceFolder": "/ws",
   "shutdownAction": "stopCompose",
