@@ -53,7 +53,7 @@ RUN groupadd --gid $GID $USERNAME \
 RUN chown -R ${UID}:${GID} /ws
 
 RUN groupadd fuse \
-    && usermod -aG fuse ${USERNAME}
+    && usermod -aG fuse,video ${USERNAME}
 
 # Set the user and source entrypoint in the user's .bashrc file
 RUN echo Defaults secure_path = /opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin > /etc/sudoers.d/secure_path \

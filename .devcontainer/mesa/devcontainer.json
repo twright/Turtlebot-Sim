@@ -1,9 +1,9 @@
 {
-    "name": "RoboSapiens WP3 Turtlebot (nogpu)",
+    "name": "RoboSapiens WP3 Turtlebot (mesa)",
     "dockerComposeFile": "../../docker/docker-compose.yaml",
-    "service": "devnogpu",
+    "service": "devmesa",
     "runServices": [
-        "devnogpu"
+        "devmesa"
     ],
     "workspaceFolder": "/ws",
     "shutdownAction": "stopCompose",

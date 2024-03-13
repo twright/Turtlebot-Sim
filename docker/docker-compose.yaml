@@ -12,7 +12,6 @@ services:
       - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
     environment:
       - DISPLAY=${DISPLAY}
-      - NVIDIA_DRIVER_CAPABILITIES=all
     network_mode: host
   dev:
     extends: base
@@ -32,6 +31,14 @@ services:
       - ignitiondata:/root/.ignition
       - rosdata:/root/.ros
       - ${XAUTHORITY:-$HOME/.Xauthority}:/home/${USERNAME:-devuser}/.Xauthority
+      # - /dev/dri:/dev/dri
+  devnogpu:
+    extends: dev
+    environment:
+      - LIBGL_ALWAYS_SOFTWARE=1
+  devmesa:
+    extends: dev
+    volumes:
       - /dev/dri:/dev/dri
   devnvidia:
     extends: dev
@@ -42,6 +49,8 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
+    environment:
+      - NVIDIA_DRIVER_CAPABILITIES=all
 
 volumes:
   rosuserdata:
