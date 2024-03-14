@@ -22,6 +22,10 @@ RUN pip3 install matplotlib transforms3d
 
 RUN apt-get update && apt-get install -y --no-install-recommends tmux ros-dev-tools
 
+COPY create3.patch /tmp/create3.patch
+RUN cd /opt/ros/humble/share/irobot_create_description/urdf && \
+    patch < /tmp/create3.patch
+
 COPY setup.bash /opt/setup.bash
 COPY entrypoint.sh /opt/entrypoint.sh
 
