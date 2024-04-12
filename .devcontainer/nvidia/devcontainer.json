@@ -10,6 +10,7 @@
   "mounts": [
     "source=${localWorkspaceFolder}/,target=/ws,type=bind,consistency=cached"
   ],
+  "remoteUser": "twright",
   "customizations": {
     "vscode": {
       "settings": {
@@ -19,7 +20,12 @@
             "path": "/bin/bash"
           }
         }
-      }
+      },
+      "extensions": [
+        "masonicboom.web-browser",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-powertoys"
+      ]
     }
   }
 }

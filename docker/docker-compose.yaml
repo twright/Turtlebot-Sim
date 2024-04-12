@@ -1,9 +1,13 @@
 services:
   base:
-    image: turtlebot4:base
+    # image: turtlebot4:dev
     build:
       context: .
-      target: base
+      target: dev
+      args:
+        - UID=${UID:-1000}
+        - GID=${UID:-1000}
+        - USERNAME=twright
     # command: tmux
     stdin_open: true
     ipc: host
@@ -15,22 +19,22 @@ services:
     network_mode: host
   dev:
     extends: base
-    image: turtlebot4:dev
+    # image: turtlebot4:dev
     build:
       context: .
       target: dev
       args:
         - UID=${UID:-1000}
         - GID=${UID:-1000}
-        - USERNAME=${USERNAME:-devuser}
-    user: ${USERNAME:-devuser}
+        - USERNAME=twright
+    user: twright
     command: sleep infinity
     volumes:
-      - ignitionuserdata:/home/${USERNAME:-devuser}/.ignition
-      - rosuserdata:/home/${USERNAME:-devuser}/.ros
+      - ignitionuserdata:/home/twright/.ignition
+      - rosuserdata:/home/twright/.ros
       - ignitiondata:/root/.ignition
       - rosdata:/root/.ros
-      - ${XAUTHORITY:-$HOME/.Xauthority}:/home/${USERNAME:-devuser}/.Xauthority
+      - ${XAUTHORITY:-$HOME/.Xauthority}:/home/twright/.Xauthority
       # - /dev/dri:/dev/dri
   devnogpu:
     extends: dev
