@@ -1,0 +1,31 @@
+diff --git a/nav2_bringup/params/nav2_params.yaml b/nav2_bringup/params/nav2_params.yaml
+index 5f4b08f6..0d1adb2a 100644
+--- a/nav2_bringup/params/nav2_params.yaml
++++ b/nav2_bringup/params/nav2_params.yaml
+@@ -37,7 +37,7 @@ amcl:
+     z_max: 0.05
+     z_rand: 0.5
+     z_short: 0.05
+-    scan_topic: scan
++    scan_topic: scan_safe
+ 
+ bt_navigator:
+   ros__parameters:
+@@ -208,7 +208,7 @@ local_costmap:
+         mark_threshold: 0
+         observation_sources: scan
+         scan:
+-          topic: /scan
++          topic: /scan_safe
+           max_obstacle_height: 2.0
+           clearing: True
+           marking: True
+@@ -239,7 +239,7 @@ global_costmap:
+         enabled: True
+         observation_sources: scan
+         scan:
+-          topic: /scan
++          topic: /scan_safe
+           max_obstacle_height: 2.0
+           clearing: True
+           marking: True
