@@ -1,0 +1,3 @@
+[submodule "scan_relay_ws/navigation2"]
+	path = scan_relay_ws/navigation2
+	url = git@github.com:ros-planning/navigation2.git
