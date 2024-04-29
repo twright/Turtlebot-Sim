@@ -4,4 +4,4 @@
 cd "$(dirname "${BASH_SOURCE[0]}")"
 cd navigation2
 
-git apply ../nav_parameters.patch
+git apply ../nav_topic.patch

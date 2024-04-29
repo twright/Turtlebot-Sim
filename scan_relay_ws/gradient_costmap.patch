@@ -1,0 +1,30 @@
+diff --git a/nav2_bringup/params/nav2_params.yaml b/nav2_bringup/params/nav2_params.yaml
+index 0d1adb2a..cb0ddc18 100644
+--- a/nav2_bringup/params/nav2_params.yaml
++++ b/nav2_bringup/params/nav2_params.yaml
+@@ -192,7 +192,11 @@ local_costmap:
+       height: 3
+       resolution: 0.05
+       robot_radius: 0.22
+-      plugins: ["voxel_layer", "inflation_layer"]
++      # plugins: ["voxel_layer", "inflation_layer"]
++      plugins: ["voxel_layer", "gradient_layer"]
++      gradient_layer:
++        plugin: "gradient_costmap_plugin/GradientLayer"
++        enabled: True
+       inflation_layer:
+         plugin: "nav2_costmap_2d::InflationLayer"
+         cost_scaling_factor: 3.0
+@@ -233,7 +237,11 @@ global_costmap:
+       robot_radius: 0.22
+       resolution: 0.05
+       track_unknown_space: true
+-      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
++      # plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
++      plugins: ["static_layer", "obstacle_layer", "gradient_layer"]
++      gradient_layer:
++        plugin: "gradient_costmap_plugin/GradientLayer"
++        enabled: True
+       obstacle_layer:
+         plugin: "nav2_costmap_2d::ObstacleLayer"
+         enabled: True
