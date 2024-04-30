@@ -9,7 +9,7 @@
 1. Follow the instructions provided at https://navigation.ros.org/getting_started/index.html to ensure that you have a working Turtlebot 3 simulation environment.
 1. Apply the patches: `./apply_topic_patch`
 1. Build the updated Nav2 stack and other nodes: `colcon build`
-1. Start the Turtlebot3 simulation: `./run_turtlebot3_sim`
+1. Start the Turtlebot3 simulation: `./run_turtlebot3_sim.sh`
 2. Do 2D pose estimation (as described in the getting started guide). Observe that nothing happens.
 3. In a separate terminal, repeat the `source ...` commands from above and run `ros2 run scan_modifier scan_node`.
 4. Observe that the simulation now works as normal.

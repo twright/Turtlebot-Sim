@@ -63,6 +63,13 @@ RUN groupadd fuse \
 RUN echo Defaults secure_path = /opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin > /etc/sudoers.d/secure_path \
     && chmod 0440 /etc/sudoers.d/secure_path
 
+RUN apt update && apt install -y jupyter-notebook  python3-jupyter-server
+RUN cp -r /usr/share/jupyter/kernels/python3 /usr/share/jupyter/kernels/python3ros
+
+COPY kernel.json /usr/share/jupyter/kernels/python3ros/kernel.json
+
+RUN apt update && apt install -y ros-humble-turtlebot3-gazebo ros-humble-turtlebot3-teleop
+
 RUN echo "source /opt/entrypoint.sh" >> /root/.profile
 USER ${USERNAME}
 RUN echo "source /opt/entrypoint.sh" >> /home/${USERNAME}/.bashrc
