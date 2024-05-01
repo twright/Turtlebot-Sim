@@ -26,10 +26,10 @@ services:
     user: ${USERNAME:-devuser}
     command: sleep infinity
     volumes:
-      - ignitionuserdata:/home/${USERNAME:-devuser}/.ignition
-      - rosuserdata:/home/${USERNAME:-devuser}/.ros
-      - ignitiondata:/root/.ignition
-      - rosdata:/root/.ros
+      # - ignitionuserdata:/home/${USERNAME:-devuser}/.ignition
+      # - rosuserdata:/home/${USERNAME:-devuser}/.ros
+      # - ignitiondata:/root/.ignition
+      # - rosdata:/root/.ros
       - ${XAUTHORITY:-$HOME/.Xauthority}:/home/${USERNAME:-devuser}/.Xauthority
       # - /dev/dri:/dev/dri
   devnogpu:
