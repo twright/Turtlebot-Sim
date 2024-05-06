@@ -19,7 +19,12 @@
             "path": "/bin/bash"
           }
         }
-      }
+      },
+      "extensions": [
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-powertoys",
+        "ms-python.python"
+      ]
     }
   }
 }
