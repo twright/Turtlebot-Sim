@@ -1,0 +1,182 @@
+diff --git a/nav2_behavior_tree/CMakeLists.txt b/nav2_behavior_tree/CMakeLists.txt
+index 72b5c1b6..e7742349 100644
+--- a/nav2_behavior_tree/CMakeLists.txt
++++ b/nav2_behavior_tree/CMakeLists.txt
+@@ -93,6 +93,9 @@ list(APPEND plugin_libs nav2_spin_action_bt_node)
+ add_library(nav2_wait_action_bt_node SHARED plugins/action/wait_action.cpp)
+ list(APPEND plugin_libs nav2_wait_action_bt_node)
+ 
++add_library(nav2_wait_action_custom_bt_node SHARED plugins/action/wait_action_custom.cpp)
++list(APPEND plugin_libs nav2_wait_action_custom_bt_node)
++
+ add_library(nav2_assisted_teleop_action_bt_node SHARED plugins/action/assisted_teleop_action.cpp)
+ list(APPEND plugin_libs nav2_assisted_teleop_action_bt_node)
+ 
+diff --git a/nav2_behavior_tree/include/nav2_behavior_tree/plugins/action/wait_action_custom.hpp b/nav2_behavior_tree/include/nav2_behavior_tree/plugins/action/wait_action_custom.hpp
+new file mode 100644
+index 00000000..46fbbd06
+--- /dev/null
++++ b/nav2_behavior_tree/include/nav2_behavior_tree/plugins/action/wait_action_custom.hpp
+@@ -0,0 +1,57 @@
++// Copyright (c) 2018 Samsung Research America
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//     http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++#ifndef NAV2_BEHAVIOR_TREE__PLUGINS__ACTION__WAIT_ACTION_CUSTOM_HPP_
++#define NAV2_BEHAVIOR_TREE__PLUGINS__ACTION__WAIT_ACTION_CUSTOM_HPP_
++
++#include <string>
++
++#include "nav2_behavior_tree/bt_action_node.hpp"
++#include "nav2_msgs/action/wait.hpp"
++
++namespace nav2_behavior_tree
++{
++
++/**
++ * @brief A nav2_behavior_tree::BtActionNode class that wraps nav2_msgs::action::Wait
++ */
++class WaitActionCustom : public BtActionNode<nav2_msgs::action::Wait>
++{
++public:
++  /**
++   * @brief A constructor for nav2_behavior_tree::WaitAction
++   * @param xml_tag_name Name for the XML tag for this node
++   * @param action_name Action name this node creates a client for
++   * @param conf BT node configuration
++   */
++  WaitActionCustom(const std::string& xml_tag_name, const std::string& action_name, const BT::NodeConfiguration& conf);
++
++  /**
++   * @brief Function to perform some user-defined operation on tick
++   */
++  void on_tick() override;
++
++  /**
++   * @brief Creates list of BT ports
++   * @return BT::PortsList Containing basic ports along with node-specific ports
++   */
++  static BT::PortsList providedPorts()
++  {
++    return providedBasicPorts({ BT::InputPort<int>("wait_duration", 1, "Wait time") });
++  }
++};
++
++}  // namespace nav2_behavior_tree
++
++#endif  // NAV2_BEHAVIOR_TREE__PLUGINS__ACTION__WAIT_ACTION_CUSTOM_HPP_
+diff --git a/nav2_behavior_tree/nav2_tree_nodes.xml b/nav2_behavior_tree/nav2_tree_nodes.xml
+index 1a2e3d7b..e8d17977 100644
+--- a/nav2_behavior_tree/nav2_tree_nodes.xml
++++ b/nav2_behavior_tree/nav2_tree_nodes.xml
+@@ -193,6 +193,12 @@
+       <input_port name="server_timeout">Server timeout</input_port>
+     </Action>
+ 
++    <Action ID="WaitCustom">
++      <input_port name="wait_duration">Wait time</input_port>
++      <input_port name="server_name">Server name</input_port>
++      <input_port name="server_timeout">Server timeout</input_port>
++    </Action>
++
+     <Action ID="AssistedTeleop">
+       <input_port name="time_allowance">Allowed time for spinning</input_port>
+       <input_port name="is_recovery">If true recovery count will be incremented</input_port>
+diff --git a/nav2_behavior_tree/plugins/action/wait_action_custom.cpp b/nav2_behavior_tree/plugins/action/wait_action_custom.cpp
+new file mode 100644
+index 00000000..2c226730
+--- /dev/null
++++ b/nav2_behavior_tree/plugins/action/wait_action_custom.cpp
+@@ -0,0 +1,57 @@
++// Copyright (c) 2018 Samsung Research America
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//     http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++#include <string>
++#include <memory>
++
++#include "nav2_behavior_tree/plugins/action/wait_action_custom.hpp"
++
++namespace nav2_behavior_tree
++{
++
++WaitActionCustom::WaitActionCustom(const std::string& xml_tag_name, const std::string& action_name,
++                                   const BT::NodeConfiguration& conf)
++  : BtActionNode<nav2_msgs::action::Wait>(xml_tag_name, action_name, conf)
++{
++  RCLCPP_WARN(node_->get_logger(), "WaitActionCustom called");
++  int duration;
++  getInput("wait_duration", duration);
++  if (duration <= 0)
++  {
++    RCLCPP_WARN(node_->get_logger(),
++                "Wait duration is negative or zero "
++                "(%i). Setting to positive.",
++                duration);
++    duration *= -1;
++  }
++
++  goal_.time.sec = duration;
++}
++
++void WaitActionCustom::on_tick()
++{
++  increment_recovery_count();
++}
++
++}  // namespace nav2_behavior_tree
++
++#include "behaviortree_cpp_v3/bt_factory.h"
++BT_REGISTER_NODES(factory)
++{
++  BT::NodeBuilder builder = [](const std::string& name, const BT::NodeConfiguration& config) {
++    return std::make_unique<nav2_behavior_tree::WaitActionCustom>(name, "wait", config);
++  };
++
++  factory.registerBuilder<nav2_behavior_tree::WaitActionCustom>("WaitCustom", builder);
++}
+diff --git a/nav2_bringup/params/nav2_params.yaml b/nav2_bringup/params/nav2_params.yaml
+index 5f4b08f6..13ea78b4 100644
+--- a/nav2_bringup/params/nav2_params.yaml
++++ b/nav2_bringup/params/nav2_params.yaml
+@@ -52,6 +52,7 @@ bt_navigator:
+     # nav2_bt_navigator/navigate_through_poses_w_replanning_and_recovery.xml
+     # They can be set here or via a RewrittenYaml remap from a parent launch file to Nav2.
+     plugin_lib_names:
++      - nav2_wait_action_custom_bt_node    # our new plugin
+       - nav2_compute_path_to_pose_action_bt_node
+       - nav2_compute_path_through_poses_action_bt_node
+       - nav2_smooth_path_action_bt_node
+diff --git a/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml b/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml
+index 2396b844..db375891 100644
+--- a/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml
++++ b/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml
+@@ -27,7 +27,7 @@
+             <ClearEntireCostmap name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
+           </Sequence>
+           <Spin spin_dist="1.57"/>
+-          <Wait wait_duration="5"/>
++          <WaitCustom wait_duration="5"/>
+           <BackUp backup_dist="0.30" backup_speed="0.05"/>
+         </RoundRobin>
+       </ReactiveFallback>
