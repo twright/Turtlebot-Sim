@@ -1,0 +1,2 @@
+portion==2.4.2
+pytest==8.2.0
