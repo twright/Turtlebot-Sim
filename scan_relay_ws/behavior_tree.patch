@@ -94,10 +94,10 @@ index 1a2e3d7b..e8d17977 100644
        <input_port name="is_recovery">If true recovery count will be incremented</input_port>
 diff --git a/nav2_behavior_tree/plugins/action/wait_action_custom.cpp b/nav2_behavior_tree/plugins/action/wait_action_custom.cpp
 new file mode 100644
-index 00000000..2c226730
+index 00000000..85ecb26e
 --- /dev/null
 +++ b/nav2_behavior_tree/plugins/action/wait_action_custom.cpp
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,58 @@
 +// Copyright (c) 2018 Samsung Research America
 +//
 +// Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,7 +124,7 @@ index 00000000..2c226730
 +                                   const BT::NodeConfiguration& conf)
 +  : BtActionNode<nav2_msgs::action::Wait>(xml_tag_name, action_name, conf)
 +{
-+  RCLCPP_WARN(node_->get_logger(), "WaitActionCustom called");
++  RCLCPP_WARN(node_->get_logger(), "WaitActionCustom ctor");
 +  int duration;
 +  getInput("wait_duration", duration);
 +  if (duration <= 0)
@@ -141,6 +141,7 @@ index 00000000..2c226730
 +
 +void WaitActionCustom::on_tick()
 +{
++  RCLCPP_WARN(node_->get_logger(), "WaitActionCustom on_tick");
 +  increment_recovery_count();
 +}
 +
@@ -168,10 +169,23 @@ index 5f4b08f6..13ea78b4 100644
        - nav2_compute_path_through_poses_action_bt_node
        - nav2_smooth_path_action_bt_node
 diff --git a/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml b/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml
-index 2396b844..db375891 100644
+index 2396b844..25e8829e 100644
 --- a/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml
 +++ b/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml
-@@ -27,7 +27,7 @@
+@@ -10,7 +10,12 @@
+       <PipelineSequence name="NavigateWithReplanning">
+         <RateController hz="1.0">
+           <RecoveryNode number_of_retries="1" name="ComputePathToPose">
++          <Sequence>
++            <!-- Issue: The `Controller` is busy moving the robot from A to B, so effectively we only spin once... -->
++            <Spin spin_dist="1.57"/>
++            <Spin spin_dist="-1.57"/>
+             <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
++          </Sequence>
+             <ClearEntireCostmap name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+           </RecoveryNode>
+         </RateController>
+@@ -27,7 +32,7 @@
              <ClearEntireCostmap name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
            </Sequence>
            <Spin spin_dist="1.57"/>
