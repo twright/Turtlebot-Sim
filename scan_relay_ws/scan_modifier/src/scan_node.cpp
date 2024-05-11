@@ -48,8 +48,16 @@ private:
     }
 
     RCLCPP_INFO(get_logger(), "OG sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
-    laser_msg->angle_max = laser_msg->angle_max / 2;
+    // laser_msg->angle_max = laser_msg->angle_max / 2;
+
+    laser_msg->angle_min = 3.14;
+
+    decltype(laser_msg->ranges) result{};
+    result.reserve(180);
+    std::copy_n(laser_msg->ranges.begin() + 179, 180, std::back_inserter(result));
+
     laser_msg->ranges.resize(laser_msg->ranges.size() / 2);
+    laser_msg->ranges = result;
     laser_msg->intensities.resize(laser_msg->intensities.size() / 2);
     RCLCPP_INFO(get_logger(), "New sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
 
