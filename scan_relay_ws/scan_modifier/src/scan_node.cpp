@@ -1,8 +1,12 @@
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/laser_scan.hpp"
+#include "scan_modifier.hpp"
 #include <sstream>
+#include <cmath>
+
+namespace scan
+{
 
 using namespace std::placeholders;
+using ranges_t = ScanModifierNode::ranges_t;
 
 void print_laser(const sensor_msgs::msg::LaserScan& msg, const rclcpp::Logger& logger)
 {
@@ -21,63 +25,69 @@ void print_laser(const sensor_msgs::msg::LaserScan& msg, const rclcpp::Logger& l
   RCLCPP_DEBUG(logger, "Ranges: %s", result.c_str());
 }
 
-class ScanModifierNode : public rclcpp::Node
+ScanModifierNode::ScanModifierNode() : Node("scan_modifier")
 {
-public:
-  ScanModifierNode() : Node("scan_modifier")
-  {
-    subscriber_ = create_subscription<sensor_msgs::msg::LaserScan>(
-        "/scan", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::scan_sub_callback, this, _1));
-    publisher_ = create_publisher<sensor_msgs::msg::LaserScan>("/scan_safe", rclcpp::SensorDataQoS());
+  scan_sub_ = create_subscription<sensor_msgs::msg::LaserScan>(
+      "/scan", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::scan_sub_callback, this, _1));
+  publisher_ = create_publisher<sensor_msgs::msg::LaserScan>("/scan_safe", rclcpp::SensorDataQoS());
+  config_sub_ = create_subscription<std_msgs::msg::Float32MultiArray>(
+      "/scan_config", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::config_sub_callback, this, _1));
 
-    RCLCPP_INFO(get_logger(), "Scan modifier node started!");
+  RCLCPP_INFO(get_logger(), "Scan modifier node started!");
+}
+
+void ScanModifierNode::config_sub_callback(const std_msgs::msg::Float32MultiArray::SharedPtr config)
+{
+  if (config->data.size() == 2)
+  {
+    lidar_filt_lower_ = config->data[0];
+    lidar_filt_upper_ = config->data[1];
+    RCLCPP_INFO(get_logger(), "Setting non-occluded area to %f - %f", lidar_filt_lower_, lidar_filt_upper_);
+  }
+  else
+  {
+    RCLCPP_WARN(get_logger(), "Recevied incorrectly formatted config data. Expected exactly two elements.");
+  }
+}
+
+void ScanModifierNode::scan_sub_callback(const sensor_msgs::msg::LaserScan::SharedPtr laser_msg)
+{
+  const auto& logger = get_logger();
+  auto level = rcutils_logging_get_logger_effective_level(logger.get_name());
+
+  RCLCPP_INFO(get_logger(), "Callback");
+
+  if (level == RCUTILS_LOG_SEVERITY_DEBUG)
+  {
+    RCLCPP_DEBUG(get_logger(), "OG msg:");
+    print_laser(*laser_msg, get_logger());
   }
 
-private:
-  void scan_sub_callback(const sensor_msgs::msg::LaserScan::SharedPtr laser_msg)
+  RCLCPP_INFO(get_logger(), "OG sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
+
+  laser_msg->angle_min = lidar_filt_lower_;
+  laser_msg->angle_max = lidar_filt_upper_;
+  auto result = calculate_lidar_ranges(lidar_filt_lower_, lidar_filt_upper_, laser_msg->ranges);
+
+  laser_msg->ranges.resize(result.size());
+  laser_msg->intensities.resize(result.size());
+  laser_msg->ranges = std::move(result);
+  RCLCPP_INFO(get_logger(), "New sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
+
+  if (level == RCUTILS_LOG_SEVERITY_DEBUG)
   {
-    const auto& logger = get_logger();
-    auto level = rcutils_logging_get_logger_effective_level(logger.get_name());
-
-    RCLCPP_INFO(get_logger(), "Callback");
-
-    if (level == RCUTILS_LOG_SEVERITY_DEBUG)
-    {
-      RCLCPP_DEBUG(get_logger(), "OG msg:");
-      print_laser(*laser_msg, get_logger());
-    }
-
-    RCLCPP_INFO(get_logger(), "OG sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
-    // laser_msg->angle_max = laser_msg->angle_max / 2;
-
-    laser_msg->angle_min = 3.14;
-
-    decltype(laser_msg->ranges) result{};
-    result.reserve(180);
-    std::copy_n(laser_msg->ranges.begin() + 179, 180, std::back_inserter(result));
-
-    laser_msg->ranges.resize(laser_msg->ranges.size() / 2);
-    laser_msg->ranges = result;
-    laser_msg->intensities.resize(laser_msg->intensities.size() / 2);
-    RCLCPP_INFO(get_logger(), "New sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
-
-    if (level == RCUTILS_LOG_SEVERITY_DEBUG)
-    {
-      RCLCPP_DEBUG(get_logger(), "New msg:");
-      print_laser(*laser_msg, get_logger());
-    }
-
-    publisher_->publish(*laser_msg);
+    RCLCPP_DEBUG(get_logger(), "New msg:");
+    print_laser(*laser_msg, get_logger());
   }
 
-  rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr subscriber_;
-  rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr publisher_;
-};
+  publisher_->publish(*laser_msg);
+}
+}  // namespace scan
 
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<ScanModifierNode>();
+  auto node = std::make_shared<scan::ScanModifierNode>();
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;

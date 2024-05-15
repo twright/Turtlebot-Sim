@@ -12,7 +12,9 @@
 1. Start the Turtlebot3 simulation: `./run_turtlebot3_sim.sh`
 2. Do 2D pose estimation (as described in the getting started guide). Observe that nothing happens.
 3. In a separate terminal, repeat the `source ...` commands from above and run `ros2 run scan_modifier scan_node`.
-4. Observe that the simulation now works as normal.
+4. Define the area of the lidar that is not occluded, e.g., through the command: `ros2 topic pub --once /scan_config std_msgs/msg/Float32MultiArray "{data:[0.0, 3.14]}"`
+   1. This means that from 0.0 - 3.14 rad the lidar is not occluded.
+5. Observe that the simulation now works as normal.
 
 ## Running the gradient costmap
 1. Repeat steps 1 - 4 from the example above
