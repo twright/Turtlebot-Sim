@@ -10,17 +10,26 @@ def sliding_prob_lidar_mask(
     window = deque(maxlen=None if window_size is None else window_size+1)
     prob_mask : ProbLidarMask = ProbLidarMask.total_mask(0.0)
 
+
     for mask in masks:
         new_mask = ProbLidarMask(mask.map_poly(
-            lambda _: 1.0
+            lambda x: 1.0 if x else 0.0
         ))
         window.append(new_mask)
         
         if len(window) > window_size:
-            dropped_mask = window.popleft()            
+            # print("dropping left")
+            # Incremental version -- annoyingly broken
+            # dropped_mask = window.popleft()            
 
-            prob_mask += (1.0/window_size)*(new_mask - dropped_mask) # type: ignore
+            # prob_mask += (1.0/window_size)*(new_mask - dropped_mask) # type: ignore
+
+            prob_mask = (1.0/len(window))*sum(
+                window,
+                ProbLidarMask.total_mask(0.0),
+            )
         else:
+            # print("straight computations")
             # Compute the mask manually during the warmup
             prob_mask = (1.0/len(window))*sum(
                 window,
