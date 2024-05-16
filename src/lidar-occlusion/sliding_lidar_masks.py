@@ -1,7 +1,7 @@
 from typing import Iterable, Optional
 from collections import deque
 
-from masks import ProbLidarMask, BoolLidarMask
+from .masks import ProbLidarMask, BoolLidarMask
 
 def sliding_prob_lidar_mask(
             masks: Iterable[BoolLidarMask],
