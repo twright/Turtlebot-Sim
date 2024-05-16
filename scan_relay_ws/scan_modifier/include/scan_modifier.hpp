@@ -23,7 +23,7 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr publisher_;
 
-  float lidar_filt_upper_ = M_2_PI;
+  float lidar_filt_upper_ = 2 * M_PI;
   float lidar_filt_lower_ = 0;
 };
 
