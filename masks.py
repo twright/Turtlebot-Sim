@@ -17,6 +17,7 @@ import operator
 from functools import partial
 from collections.abc import Sequence
 from collections import deque
+import itertools
 
 import numpy as np
 import copy
@@ -68,16 +69,16 @@ class LidarMask[D]:
 
                             self._values = np.array([
                                 min_or_default(k for ((l, u), k) in contents
-                                    if l <= i*self._base_angle <= u)
-                                for i in range(round(2/self._base_angle))
+                                    if l <= theta <= u)
+                                for theta in self.real_angles
                             ])
                         # Boolean interval spec of form
                         # [Interval_1, ..., Interval_n]
                         case (_, _):
                             self._values = np.array([
                                 len([None for (l, u) in contents
-                                        if l <= i*self._base_angle <= u]) > 0
-                                for i in range(round(2/self._base_angle))
+                                        if l <= theta < u]) > 0
+                                for theta in self.real_angles
                             ])
                         # A preformatted numpy array
                         case _:
@@ -87,7 +88,12 @@ class LidarMask[D]:
 
     @property
     def angles(self) -> List[Fraction]:
-        return [i*self.base_angle for i in range(round(2*math.pi/self.base_angle))]
+        return [i*self.base_angle
+                for i in range(round(2/self.base_angle))]
+    
+    @property
+    def real_angles(self) -> List[float]:
+        return [r*math.pi for r in self.angles]
 
     @property
     def num_points(self):
@@ -146,7 +152,13 @@ class LidarMask[D]:
         return f'{self.__class__.__name__}({repr(self._values), self._base_angle})'
     
     def __call__(self, t: float) -> D:
-        return self.int_dict.get(t, self.default_value) # type: ignore
+        t = t % (2*math.pi)
+
+        for (a, v) in zip(self.real_angles, self._values):
+            if a <= t < a + self.base_angle*math.pi:
+                return v
+
+        raise ValueError(f'No value found for angle {t}')
     
     def __eq__(self, other) -> 'BoolLidarMask':
         match other:
@@ -330,7 +342,7 @@ class BoolLidarMask(LidarMask[bool]):
     def plot(self, **kwargs):
         from matplotlib import pyplot as plt
 
-        x = np.vectorize(float)(self.angles)
+        x = self.real_angles
         y = self.prob_mask._values
 
         fig = plt.figure(figsize=(6, 1))
@@ -366,12 +378,13 @@ class ProbLidarMask(LidarMask[float]):
     def plot(self, **kwargs):
         from matplotlib import pyplot as plt
 
-        x = np.vectorize(float)(self.angles)
+        x = self.real_angles
         y = self._values
 
         fig = plt.figure(figsize=(6, 1))
         plt.plot(x, y, color='black', **kwargs)
         plt.xlim(0, 2*math.pi)
-        plt.xticks([i*math.pi / 4 for i in range(9)], [r"$" + str(i) + r"\pi$/4" for i in range(9)])
+        plt.xticks([i*math.pi / 4 for i in range(9)],
+                   [r"$" + str(i) + r"\pi$/4" for i in range(9)])
         plt.yticks([0, 1], [0, 1])
         return fig
