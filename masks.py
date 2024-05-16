@@ -337,7 +337,8 @@ class BoolLidarMask(LidarMask[bool]):
         fig = plt.figure(figsize=(6, 1))
         plt.fill_between(x, y, color='black', **kwargs)
         plt.xlim(0, 2*math.pi)
-        plt.xticks([i*math.pi / 4 for i in range(9)], [r"$" + str(i) + r"\pi$/4" for i in range(9)])
+        plt.xticks([i*math.pi / 4 for i in range(9)],
+                   [r"$" + str(i) + r"\pi$/4" for i in range(9)])
         plt.yticks([0, 1], [0, 1])
         return fig
     
