@@ -309,7 +309,8 @@ class BoolLidarMask(LidarMask[bool]):
 
     @property
     def prob_mask(self) -> 'ProbLidarMask':
-        return ProbLidarMask(self.map_poly(lambda x: 1.0 if x else 0.0))
+        return ProbLidarMask(self.map_poly(lambda x: 1.0 if x else 0.0),
+                             base_angle=self.base_angle)
     
     def pie_plot(self, **kwargs):
         from matplotlib import pyplot as plt
