@@ -48,36 +48,42 @@ class LidarMask[D]:
                 self._values = contents_spec
             case _:
                 contents = list(contents_spec)
-                assert len(contents) > 0
-                # Assume that the input is homogeneous
-                match contents[0]:
-                    # Interval dict spec of form
-                    # [(Interval_1, k_1), ..., (Interval_n, k_n)]
-                    case ((_, _), _):
-                        def min_or_default(xs : Iterable[D]) -> Optional[D]:
-                            try:
-                                return min(xs) # type: ignore
-                            except ValueError:
-                                return self.default_value
 
-                        self._values = np.array([
-                            min_or_default(k for ((l, u), k) in contents
-                                  if l <= i*self._base_angle <= u)
-                            for i in range(round(2*math.pi/self._base_angle))
-                        ])
-                    # Boolean interval spec of form
-                    # [Interval_1, ..., Interval_n]
-                    case (_, _):
-                        self._values = np.array([
-                            len([None for (l, u) in contents
-                                      if l <= i*self._base_angle <= u]) > 0
-                            for i in range(round(2*math.pi/self._base_angle))
-                        ])
-                    # A preformatted numpy array
-                    case _:
-                        self._values = np.array(contents_spec)
+                if len(contents) == 0:
+                    self._values = np.array([
+                        self.default_value
+                            for _ in range(round(2/self._base_angle))
+                    ])
+                else:
+                    # Assume that the input is homogeneous
+                    match contents[0]:
+                        # Interval dict spec of form
+                        # [(Interval_1, k_1), ..., (Interval_n, k_n)]
+                        case ((_, _), _):
+                            def min_or_default(xs : Iterable[D]) -> Optional[D]:
+                                try:
+                                    return min(xs) # type: ignore
+                                except ValueError:
+                                    return self.default_value
+
+                            self._values = np.array([
+                                min_or_default(k for ((l, u), k) in contents
+                                    if l <= i*self._base_angle <= u)
+                                for i in range(round(2/self._base_angle))
+                            ])
+                        # Boolean interval spec of form
+                        # [Interval_1, ..., Interval_n]
+                        case (_, _):
+                            self._values = np.array([
+                                len([None for (l, u) in contents
+                                        if l <= i*self._base_angle <= u]) > 0
+                                for i in range(round(2/self._base_angle))
+                            ])
+                        # A preformatted numpy array
+                        case _:
+                            self._values = np.array(contents_spec)
         
-        assert self._values.shape == (round(2*math.pi/self._base_angle),)
+        assert self._values.shape == (round(2/self._base_angle),)
 
     @property
     def angles(self) -> List[Fraction]:
