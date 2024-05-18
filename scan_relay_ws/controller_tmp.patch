@@ -1,0 +1,836 @@
+diff --git a/dwb_spinning_controller/CMakeLists.txt b/dwb_spinning_controller/CMakeLists.txt
+new file mode 100644
+index 00000000..8c3104fa
+--- /dev/null
++++ b/dwb_spinning_controller/CMakeLists.txt
+@@ -0,0 +1,63 @@
++cmake_minimum_required(VERSION 3.5)
++project(dwb_spinning_controller)
++
++find_package(ament_cmake REQUIRED)
++find_package(nav2_common REQUIRED)
++find_package(angles REQUIRED)
++find_package(dwb_core REQUIRED)
++find_package(nav_2d_msgs REQUIRED)
++find_package(nav_2d_utils REQUIRED)
++find_package(pluginlib REQUIRED)
++find_package(rclcpp REQUIRED)
++find_package(nav2_util REQUIRED)
++
++nav2_package()
++
++include_directories(
++  include
++)
++
++set(dependencies
++  angles
++  dwb_core
++  nav_2d_msgs
++  nav_2d_utils
++  pluginlib
++  rclcpp
++  nav2_util
++)
++
++add_library(dwb_spinning_controller SHARED
++        src/dwb_spinning_controller.cpp)
++
++# prevent pluginlib from using boost
++target_compile_definitions(dwb_spinning_controller PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
++
++ament_target_dependencies(dwb_spinning_controller
++  ${dependencies}
++)
++
++install(TARGETS dwb_spinning_controller
++  ARCHIVE DESTINATION lib
++  LIBRARY DESTINATION lib
++  RUNTIME DESTINATION bin
++)
++
++install(DIRECTORY include/
++  DESTINATION include/
++)
++
++if(BUILD_TESTING)
++  find_package(ament_lint_auto REQUIRED)
++  # the following line skips the linter which checks for copyrights
++  set(ament_cmake_copyright_FOUND TRUE)
++  ament_lint_auto_find_test_dependencies()
++endif()
++
++ament_export_include_directories(include)
++ament_export_libraries(dwb_spinning_controller)
++ament_export_dependencies(${dependencies})
++
++pluginlib_export_plugin_description_file(nav2_core dwb_spinning_controller.xml)
++
++ament_package()
+diff --git a/dwb_spinning_controller/dwb_spinning_controller.xml b/dwb_spinning_controller/dwb_spinning_controller.xml
+new file mode 100644
+index 00000000..1272bb88
+--- /dev/null
++++ b/dwb_spinning_controller/dwb_spinning_controller.xml
+@@ -0,0 +1,9 @@
++<class_libraries>
++    <library path="dwb_spinning_controller">
++        <class type="dwb_spinning_controller::DWBSpinningController" base_class_type="nav2_core::Controller">
++            <description>
++                dwb_spinning_controller
++            </description>
++        </class>
++    </library>
++</class_libraries>
+diff --git a/dwb_spinning_controller/include/dwb_spinning_controller/dwb_spinning_controller.hpp b/dwb_spinning_controller/include/dwb_spinning_controller/dwb_spinning_controller.hpp
+new file mode 100644
+index 00000000..af685d9a
+--- /dev/null
++++ b/dwb_spinning_controller/include/dwb_spinning_controller/dwb_spinning_controller.hpp
+@@ -0,0 +1,60 @@
++/*
++ * SPDX-License-Identifier: BSD-3-Clause
++ *
++ *  Author(s): Shrijit Singh <shrijitsingh99@gmail.com>
++ *
++ */
++
++#ifndef DWB_SPINNING_CONTROLLER__DWB_SPINNING_CONTROLLER_HPP_
++#define DWB_SPINNING_CONTROLLER__DWB_SPINNING_CONTROLLER_HPP_
++
++#include <string>
++#include <vector>
++#include <memory>
++
++#include "nav2_core/controller.hpp"
++#include "rclcpp/rclcpp.hpp"
++#include "pluginlib/class_loader.hpp"
++#include "pluginlib/class_list_macros.hpp"
++#include "dwb_core/dwb_local_planner.hpp"
++
++namespace dwb_spinning_controller
++{
++
++struct SpinInstructions
++{
++  struct Instruction
++  {
++    double omega;
++    double duration;
++  };
++
++  std::vector<Instruction> instructions;
++  double period;
++};
++
++// TODO: Template class - base class Controller
++class DWBSpinningController : public dwb_core::DWBLocalPlanner
++{
++public:
++  void configure(const rclcpp_lifecycle::LifecycleNode::WeakPtr& parent, std::string name,
++                 std::shared_ptr<tf2_ros::Buffer> tf,
++                 std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
++
++  geometry_msgs::msg::TwistStamped computeVelocityCommands(const geometry_msgs::msg::PoseStamped& pose,
++                                                           const geometry_msgs::msg::Twist&,
++                                                           nav2_core::GoalChecker*) override;
++
++private:
++  void maybe_spin(geometry_msgs::msg::TwistStamped& cmd_vel);
++
++  rclcpp::Logger logger_{ rclcpp::get_logger("DWBSpinningController") };
++  rclcpp::Clock::SharedPtr clock_;
++  double last_spin_;
++  double period_start_;
++  SpinInstructions instructions_{};
++};
++
++}  // namespace dwb_spinning_controller
++
++#endif  // DWB_SPINNING_CONTROLLER__DWB_SPINNING_CONTROLLER_HPP_
+\ No newline at end of file
+diff --git a/dwb_spinning_controller/package.xml b/dwb_spinning_controller/package.xml
+new file mode 100644
+index 00000000..dcc5b677
+--- /dev/null
++++ b/dwb_spinning_controller/package.xml
+@@ -0,0 +1,30 @@
++<?xml version="1.0"?>
++<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
++<package format="3">
++  <name>dwb_spinning_controller</name>
++  <version>1.0.0</version>
++  <description>DWB Spinning controller</description>
++  <maintainer email="mhk@ece.au.dk">Morten Haahr Kristensen</maintainer>
++  <license>BSD-3-Clause</license>
++
++  <buildtool_depend>ament_cmake</buildtool_depend>
++
++  <depend>nav2_common</depend>
++  <depend>nav2_core</depend>
++  <depend>nav2_util</depend>
++  <depend>nav2_costmap_2d</depend>
++  <depend>rclcpp</depend>
++  <depend>geometry_msgs</depend>
++  <depend>nav2_msgs</depend>
++  <depend>pluginlib</depend>
++  <depend>tf2</depend>
++
++  <exec_depend>nav2_bringup</exec_depend>
++
++  <test_depend>ament_cmake_gtest</test_depend>
++
++  <export>
++    <build_type>ament_cmake</build_type>
++  </export>
++
++</package>
+\ No newline at end of file
+diff --git a/dwb_spinning_controller/src/dwb_spinning_controller.cpp b/dwb_spinning_controller/src/dwb_spinning_controller.cpp
+new file mode 100644
+index 00000000..57c8bec4
+--- /dev/null
++++ b/dwb_spinning_controller/src/dwb_spinning_controller.cpp
+@@ -0,0 +1,82 @@
++/*
++ * SPDX-License-Identifier: BSD-3-Clause
++ *
++ *  Author(s): Shrijit Singh <shrijitsingh99@gmail.com>
++ *
++ */
++
++#include "dwb_spinning_controller/dwb_spinning_controller.hpp"
++#include <algorithm>
++
++namespace dwb_spinning_controller
++{
++
++void DWBSpinningController::maybe_spin(geometry_msgs::msg::TwistStamped& cmd_vel)
++{
++  // TODO: Somewhere assert that sum of instruction durations is less than total duration
++  // using LinearVec3 = decltype(cmd_vel.twist.linear);
++
++  auto now = clock_->now().seconds();
++
++  // Check if we need to spin
++  for (size_t i = 0; i < instructions_.instructions.size(); i++)
++  {
++    auto end_it = instructions_.instructions.begin() + i + 1;
++    auto time_delta = std::accumulate(instructions_.instructions.begin(), end_it, 0.0,
++                                      [](auto res, auto instr) { return res + instr.duration; });
++    if (last_spin_ < period_start_ + time_delta)
++    {
++      last_spin_ = now;
++      cmd_vel.twist.linear.x = 0.0;
++      cmd_vel.twist.linear.y = 0.0;
++      cmd_vel.twist.linear.z = 0.0;
++
++      cmd_vel.twist.angular.z = instructions_.instructions[i].omega;
++      RCLCPP_INFO(logger_, "Spinning: %f, %f, %f, %f", last_spin_, time_delta, period_start_,
++                  instructions_.instructions[i].duration);
++      return;
++    }
++    else
++    {
++      RCLCPP_INFO(logger_, "Not spinning: %f, %f, %f, %f", last_spin_, time_delta, period_start_,
++                  instructions_.instructions[i].duration);
++    }
++  }
++  if (period_start_ + instructions_.period < now)
++  {
++    RCLCPP_INFO(logger_, "New period");
++    period_start_ = now;
++    last_spin_ = now;
++  }
++}
++
++void DWBSpinningController::configure(const rclcpp_lifecycle::LifecycleNode::WeakPtr& parent, std::string name,
++                                      std::shared_ptr<tf2_ros::Buffer> tf,
++                                      std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
++{
++  dwb_core::DWBLocalPlanner::configure(parent, name, tf, costmap_ros);
++  auto node = parent.lock();
++  logger_ = node->get_logger();
++  clock_ = node->get_clock();
++  last_spin_ = clock_->now().seconds();
++  period_start_ = clock_->now().seconds();
++
++  std::vector<SpinInstructions::Instruction> instrcts{ { { 1.57, 1.0 }, { -1.57, 1.0 } } };
++  instructions_ = { std::move(instrcts), 5 };
++
++  RCLCPP_INFO(logger_, "DWBSpinningController::configure");
++}
++
++geometry_msgs::msg::TwistStamped DWBSpinningController::computeVelocityCommands(
++    const geometry_msgs::msg::PoseStamped& pose, const geometry_msgs::msg::Twist& velocity,
++    nav2_core::GoalChecker* goal_checker)
++{
++  auto cmd_vel = dwb_core::DWBLocalPlanner::computeVelocityCommands(pose, velocity, goal_checker);
++  maybe_spin(cmd_vel);
++  return cmd_vel;
++}
++
++}  // namespace dwb_spinning_controller
++
++// Register this controller as a nav2_core plugin
++PLUGINLIB_EXPORT_CLASS(dwb_spinning_controller::DWBSpinningController, nav2_core::Controller)
+\ No newline at end of file
+diff --git a/nav2_bringup/params/nav2_params.yaml b/nav2_bringup/params/nav2_params.yaml
+index 5f4b08f6..6753b5d0 100644
+--- a/nav2_bringup/params/nav2_params.yaml
++++ b/nav2_bringup/params/nav2_params.yaml
+@@ -136,9 +136,8 @@ controller_server:
+       plugin: "nav2_controller::SimpleGoalChecker"
+       xy_goal_tolerance: 0.25
+       yaw_goal_tolerance: 0.25
+-    # DWB parameters
+     FollowPath:
+-      plugin: "dwb_core::DWBLocalPlanner"
++      plugin: "dwb_spinning_controller::DWBSpinningController" # In Iron and older versions, "/" was used instead of "::"
+       debug_trajectory_details: True
+       min_vel_x: 0.0
+       min_vel_y: 0.0
+@@ -178,6 +177,13 @@ controller_server:
+       RotateToGoal.scale: 32.0
+       RotateToGoal.slowing_factor: 5.0
+       RotateToGoal.lookahead_time: -1.0
++    # FollowPath:
++    #   plugin: "nav2_pure_pursuit_controller::PurePursuitController" # In Iron and older versions, "/" was used instead of "::"
++    #   debug_trajectory_details: True
++    #   desired_linear_vel: 0.2
++    #   lookahead_dist: 0.4
++    #   max_angular_vel: 1.0
++    #   transform_tolerance: 1.0
+ 
+ local_costmap:
+   local_costmap:
+diff --git a/nav2_pure_pursuit_controller/CMakeLists.txt b/nav2_pure_pursuit_controller/CMakeLists.txt
+new file mode 100644
+index 00000000..9eeddc74
+--- /dev/null
++++ b/nav2_pure_pursuit_controller/CMakeLists.txt
+@@ -0,0 +1,65 @@
++cmake_minimum_required(VERSION 3.5)
++project(nav2_pure_pursuit_controller)
++
++find_package(ament_cmake REQUIRED)
++find_package(nav2_common REQUIRED)
++find_package(nav2_core REQUIRED)
++find_package(nav2_costmap_2d REQUIRED)
++find_package(nav2_util REQUIRED)
++find_package(rclcpp REQUIRED)
++find_package(geometry_msgs REQUIRED)
++find_package(nav_msgs REQUIRED)
++find_package(pluginlib REQUIRED)
++find_package(tf2 REQUIRED)
++
++nav2_package()
++
++include_directories(
++  include
++)
++
++set(dependencies
++  rclcpp
++  geometry_msgs
++  nav2_costmap_2d
++  pluginlib
++  nav_msgs
++  nav2_util
++  nav2_core
++  tf2
++)
++
++add_library(nav2_pure_pursuit_controller SHARED
++        src/pure_pursuit_controller.cpp)
++
++# prevent pluginlib from using boost
++target_compile_definitions(nav2_pure_pursuit_controller PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
++
++ament_target_dependencies(nav2_pure_pursuit_controller
++  ${dependencies}
++)
++
++install(TARGETS nav2_pure_pursuit_controller
++  ARCHIVE DESTINATION lib
++  LIBRARY DESTINATION lib
++  RUNTIME DESTINATION bin
++)
++
++install(DIRECTORY include/
++  DESTINATION include/
++)
++
++if(BUILD_TESTING)
++  find_package(ament_lint_auto REQUIRED)
++  # the following line skips the linter which checks for copyrights
++  set(ament_cmake_copyright_FOUND TRUE)
++  ament_lint_auto_find_test_dependencies()
++endif()
++
++ament_export_include_directories(include)
++ament_export_libraries(nav2_pure_pursuit_controller)
++ament_export_dependencies(${dependencies})
++
++pluginlib_export_plugin_description_file(nav2_core nav2_pure_pursuit_controller.xml)
++
++ament_package()
+diff --git a/nav2_pure_pursuit_controller/include/nav2_pure_pursuit_controller/pure_pursuit_controller.hpp b/nav2_pure_pursuit_controller/include/nav2_pure_pursuit_controller/pure_pursuit_controller.hpp
+new file mode 100644
+index 00000000..162ae0c1
+--- /dev/null
++++ b/nav2_pure_pursuit_controller/include/nav2_pure_pursuit_controller/pure_pursuit_controller.hpp
+@@ -0,0 +1,71 @@
++/*
++ * SPDX-License-Identifier: BSD-3-Clause
++ *
++ *  Author(s): Shrijit Singh <shrijitsingh99@gmail.com>
++ *
++ */
++
++#ifndef NAV2_PURE_PURSUIT_CONTROLLER__PURE_PURSUIT_CONTROLLER_HPP_
++#define NAV2_PURE_PURSUIT_CONTROLLER__PURE_PURSUIT_CONTROLLER_HPP_
++
++#include <string>
++#include <vector>
++#include <memory>
++
++#include "nav2_core/controller.hpp"
++#include "rclcpp/rclcpp.hpp"
++#include "pluginlib/class_loader.hpp"
++#include "pluginlib/class_list_macros.hpp"
++
++namespace nav2_pure_pursuit_controller
++{
++
++class PurePursuitController : public nav2_core::Controller
++{
++public:
++  PurePursuitController() = default;
++  ~PurePursuitController() override = default;
++
++  void configure(const rclcpp_lifecycle::LifecycleNode::WeakPtr& parent, std::string name,
++                 const std::shared_ptr<tf2_ros::Buffer> tf,
++                 const std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) override;
++
++  void cleanup() override;
++  void activate() override;
++  void deactivate() override;
++
++  geometry_msgs::msg::TwistStamped computeVelocityCommands(const geometry_msgs::msg::PoseStamped& pose,
++                                                           const geometry_msgs::msg::Twist& velocity,
++                                                           nav2_core::GoalChecker* /*goal_checker*/) override;
++
++  void setPlan(const nav_msgs::msg::Path& path) override;
++
++  // Copy-paste from regulated controller
++  void setSpeedLimit(const double& speed_limit, const bool& percentage) override;
++
++protected:
++  nav_msgs::msg::Path transformGlobalPlan(const geometry_msgs::msg::PoseStamped& pose);
++
++  bool transformPose(const std::shared_ptr<tf2_ros::Buffer> tf, const std::string frame,
++                     const geometry_msgs::msg::PoseStamped& in_pose, geometry_msgs::msg::PoseStamped& out_pose,
++                     const rclcpp::Duration& transform_tolerance) const;
++
++  rclcpp_lifecycle::LifecycleNode::WeakPtr node_;
++  std::shared_ptr<tf2_ros::Buffer> tf_;
++  std::string plugin_name_;
++  std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros_;
++  rclcpp::Logger logger_{ rclcpp::get_logger("PurePursuitController") };
++  rclcpp::Clock::SharedPtr clock_;
++
++  double desired_linear_vel_, base_desired_linear_vel_;
++  double lookahead_dist_;
++  double max_angular_vel_;
++  rclcpp::Duration transform_tolerance_{ 0, 0 };
++
++  nav_msgs::msg::Path global_plan_;
++  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Path>> global_pub_;
++};
++
++}  // namespace nav2_pure_pursuit_controller
++
++#endif  // NAV2_PURE_PURSUIT_CONTROLLER__PURE_PURSUIT_CONTROLLER_HPP_
+\ No newline at end of file
+diff --git a/nav2_pure_pursuit_controller/nav2_pure_pursuit_controller.xml b/nav2_pure_pursuit_controller/nav2_pure_pursuit_controller.xml
+new file mode 100644
+index 00000000..207f4158
+--- /dev/null
++++ b/nav2_pure_pursuit_controller/nav2_pure_pursuit_controller.xml
+@@ -0,0 +1,9 @@
++<class_libraries>
++    <library path="nav2_pure_pursuit_controller">
++        <class type="nav2_pure_pursuit_controller::PurePursuitController" base_class_type="nav2_core::Controller">
++            <description>
++                nav2_pure_pursuit_controller
++            </description>
++        </class>
++    </library>
++</class_libraries>
+diff --git a/nav2_pure_pursuit_controller/package.xml b/nav2_pure_pursuit_controller/package.xml
+new file mode 100644
+index 00000000..2b491078
+--- /dev/null
++++ b/nav2_pure_pursuit_controller/package.xml
+@@ -0,0 +1,30 @@
++<?xml version="1.0"?>
++<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
++<package format="3">
++  <name>nav2_pure_pursuit_controller</name>
++  <version>1.0.0</version>
++  <description>Pure pursuit controller</description>
++  <maintainer email="shrijitsingh99@gmail.com">Shrijit Singh</maintainer>
++  <license>BSD-3-Clause</license>
++
++  <buildtool_depend>ament_cmake</buildtool_depend>
++
++  <depend>nav2_common</depend>
++  <depend>nav2_core</depend>
++  <depend>nav2_util</depend>
++  <depend>nav2_costmap_2d</depend>
++  <depend>rclcpp</depend>
++  <depend>geometry_msgs</depend>
++  <depend>nav2_msgs</depend>
++  <depend>pluginlib</depend>
++  <depend>tf2</depend>
++
++  <exec_depend>nav2_bringup</exec_depend>
++
++  <test_depend>ament_cmake_gtest</test_depend>
++
++  <export>
++    <build_type>ament_cmake</build_type>
++  </export>
++
++</package>
+\ No newline at end of file
+diff --git a/nav2_pure_pursuit_controller/src/pure_pursuit_controller.cpp b/nav2_pure_pursuit_controller/src/pure_pursuit_controller.cpp
+new file mode 100644
+index 00000000..3fde52dc
+--- /dev/null
++++ b/nav2_pure_pursuit_controller/src/pure_pursuit_controller.cpp
+@@ -0,0 +1,322 @@
++/*
++ * SPDX-License-Identifier: BSD-3-Clause
++ *
++ *  Author(s): Shrijit Singh <shrijitsingh99@gmail.com>
++ *
++ */
++
++#include <algorithm>
++#include <string>
++#include <memory>
++#include <type_traits>
++
++#include "nav2_core/exceptions.hpp"
++#include "nav2_util/node_utils.hpp"
++#include "nav2_pure_pursuit_controller/pure_pursuit_controller.hpp"
++#include "nav2_util/geometry_utils.hpp"
++#include "nav2_costmap_2d/costmap_filters/filter_values.hpp"
++
++using nav2_util::declare_parameter_if_not_declared;
++using nav2_util::geometry_utils::euclidean_distance;
++using std::abs;
++using std::hypot;
++using std::max;
++using std::min;
++
++namespace nav2_pure_pursuit_controller
++{
++
++/**
++ * Find element in iterator with the minimum calculated value
++ */
++template <typename Iter, typename Getter>
++Iter min_by(Iter begin, Iter end, Getter getCompareVal)
++{
++  if (begin == end)
++  {
++    return end;
++  }
++  auto lowest = getCompareVal(*begin);
++  Iter lowest_it = begin;
++  for (Iter it = ++begin; it != end; ++it)
++  {
++    auto comp = getCompareVal(*it);
++    if (comp < lowest)
++    {
++      lowest = comp;
++      lowest_it = it;
++    }
++  }
++  return lowest_it;
++}
++
++void PurePursuitController::configure(const rclcpp_lifecycle::LifecycleNode::WeakPtr& parent, std::string name,
++                                      const std::shared_ptr<tf2_ros::Buffer> tf,
++                                      const std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
++{
++  node_ = parent;
++
++  auto node = node_.lock();
++
++  costmap_ros_ = costmap_ros;
++  tf_ = tf;
++  plugin_name_ = name;
++  logger_ = node->get_logger();
++  clock_ = node->get_clock();
++  RCLCPP_INFO(logger_, "PurePursuitController::configure");
++
++  declare_parameter_if_not_declared(node, plugin_name_ + ".desired_linear_vel", rclcpp::ParameterValue(0.2));
++  declare_parameter_if_not_declared(node, plugin_name_ + ".lookahead_dist", rclcpp::ParameterValue(0.4));
++  declare_parameter_if_not_declared(node, plugin_name_ + ".max_angular_vel", rclcpp::ParameterValue(1.0));
++  declare_parameter_if_not_declared(node, plugin_name_ + ".transform_tolerance", rclcpp::ParameterValue(0.1));
++
++  node->get_parameter(plugin_name_ + ".desired_linear_vel", desired_linear_vel_);
++  base_desired_linear_vel_ = desired_linear_vel_;
++  node->get_parameter(plugin_name_ + ".lookahead_dist", lookahead_dist_);
++  node->get_parameter(plugin_name_ + ".max_angular_vel", max_angular_vel_);
++  double transform_tolerance;
++  node->get_parameter(plugin_name_ + ".transform_tolerance", transform_tolerance);
++  transform_tolerance_ = rclcpp::Duration::from_seconds(transform_tolerance);
++
++  global_pub_ = node->create_publisher<nav_msgs::msg::Path>("received_global_plan", 1);
++}
++
++void PurePursuitController::cleanup()
++{
++  RCLCPP_INFO(logger_, "Cleaning up controller: %s of type pure_pursuit_controller::PurePursuitController",
++              plugin_name_.c_str());
++  global_pub_.reset();
++}
++
++void PurePursuitController::activate()
++{
++  RCLCPP_INFO(logger_, "Activating controller: %s of type pure_pursuit_controller::PurePursuitController",
++              plugin_name_.c_str());
++  global_pub_->on_activate();
++}
++
++void PurePursuitController::deactivate()
++{
++  RCLCPP_INFO(logger_, "Dectivating controller: %s of type pure_pursuit_controller::PurePursuitController",
++              plugin_name_.c_str());
++  global_pub_->on_deactivate();
++}
++
++int spins_remaining{};
++// Get which type ROS uses for time...
++using ros_time = decltype(std::declval<rclcpp::Clock&>().now());
++ros_time last_spin{};
++
++bool maybe_spin(geometry_msgs::msg::TwistStamped& cmd_vel)
++{
++  if (last_spin.seconds() + 5 < cmd_vel.header.stamp.sec)
++  {
++    last_spin = cmd_vel.header.stamp;
++    spins_remaining = 30;
++  }
++  if (spins_remaining)
++  {
++    cmd_vel.twist.linear.x = 0;
++    cmd_vel.twist.angular.z = 1.57;
++    --spins_remaining;
++    return true;
++  }
++  return false;
++}
++
++geometry_msgs::msg::TwistStamped PurePursuitController::computeVelocityCommands(
++    const geometry_msgs::msg::PoseStamped& pose, const geometry_msgs::msg::Twist&, nav2_core::GoalChecker*)
++{
++  auto transformed_plan = transformGlobalPlan(pose);
++
++  // Find the first pose which is at a distance greater than the specified lookahed distance
++  auto goal_pose_it = std::find_if(transformed_plan.poses.begin(), transformed_plan.poses.end(), [&](const auto& ps) {
++    return hypot(ps.pose.position.x, ps.pose.position.y) >= lookahead_dist_;
++  });
++
++  // If the last pose is still within lookahed distance, take the last pose
++  if (goal_pose_it == transformed_plan.poses.end())
++  {
++    goal_pose_it = std::prev(transformed_plan.poses.end());
++  }
++  auto goal_pose = goal_pose_it->pose;
++
++  double linear_vel, angular_vel;
++
++  // If the goal pose is in front of the robot then compute the velocity using the pure pursuit
++  // algorithm, else rotate with the max angular velocity until the goal pose is in front of the
++  // robot
++  if (goal_pose.position.x > 0)
++  {
++    auto curvature = 2.0 * goal_pose.position.y /
++                     (goal_pose.position.x * goal_pose.position.x + goal_pose.position.y * goal_pose.position.y);
++    linear_vel = desired_linear_vel_;
++    angular_vel = desired_linear_vel_ * curvature;
++  }
++  else
++  {
++    linear_vel = 0.0;
++    angular_vel = max_angular_vel_;
++  }
++
++  // Create and publish a TwistStamped message with the desired velocity
++  geometry_msgs::msg::TwistStamped cmd_vel;
++  cmd_vel.header.frame_id = pose.header.frame_id;
++  cmd_vel.header.stamp = clock_->now();
++  cmd_vel.twist.linear.x = linear_vel;
++  cmd_vel.twist.angular.z = max(-1.0 * abs(max_angular_vel_), min(angular_vel, abs(max_angular_vel_)));
++
++  maybe_spin(cmd_vel);
++  // if (spin)
++  // {
++  //   RCLCPP_INFO(logger_, "Spinning a little: %d", spins_remaining);
++  // }
++  // else
++  // {
++  //   RCLCPP_INFO(logger_, "Done spinning...");
++  // }
++
++  return cmd_vel;
++}
++
++void PurePursuitController::setPlan(const nav_msgs::msg::Path& path)
++{
++  global_pub_->publish(path);
++  global_plan_ = path;
++}
++
++nav_msgs::msg::Path PurePursuitController::transformGlobalPlan(const geometry_msgs::msg::PoseStamped& pose)
++{
++  // Original mplementation taken fron nav2_dwb_controller
++
++  if (global_plan_.poses.empty())
++  {
++    throw nav2_core::PlannerException("Received plan with zero length");
++  }
++
++  // let's get the pose of the robot in the frame of the plan
++  geometry_msgs::msg::PoseStamped robot_pose;
++  if (!transformPose(tf_, global_plan_.header.frame_id, pose, robot_pose, transform_tolerance_))
++  {
++    throw nav2_core::PlannerException("Unable to transform robot pose into global plan's frame");
++  }
++
++  // We'll discard points on the plan that are outside the local costmap
++  nav2_costmap_2d::Costmap2D* costmap = costmap_ros_->getCostmap();
++  double dist_threshold =
++      std::max(costmap->getSizeInCellsX(), costmap->getSizeInCellsY()) * costmap->getResolution() / 2.0;
++
++  // First find the closest pose on the path to the robot
++  auto transformation_begin =
++      min_by(global_plan_.poses.begin(), global_plan_.poses.end(),
++             [&robot_pose](const geometry_msgs::msg::PoseStamped& ps) { return euclidean_distance(robot_pose, ps); });
++
++  // From the closest point, look for the first point that's further then dist_threshold from the
++  // robot. These points are definitely outside of the costmap so we won't transform them.
++  auto transformation_end =
++      std::find_if(transformation_begin, end(global_plan_.poses), [&](const auto& global_plan_pose) {
++        return euclidean_distance(robot_pose, global_plan_pose) > dist_threshold;
++      });
++
++  // Helper function for the transform below. Transforms a PoseStamped from global frame to local
++  auto transformGlobalPoseToLocal = [&](const auto& global_plan_pose) {
++    // We took a copy of the pose, let's lookup the transform at the current time
++    geometry_msgs::msg::PoseStamped stamped_pose, transformed_pose;
++    stamped_pose.header.frame_id = global_plan_.header.frame_id;
++    stamped_pose.header.stamp = pose.header.stamp;
++    stamped_pose.pose = global_plan_pose.pose;
++    transformPose(tf_, costmap_ros_->getBaseFrameID(), stamped_pose, transformed_pose, transform_tolerance_);
++    return transformed_pose;
++  };
++
++  // Transform the near part of the global plan into the robot's frame of reference.
++  nav_msgs::msg::Path transformed_plan;
++  std::transform(transformation_begin, transformation_end, std::back_inserter(transformed_plan.poses),
++                 transformGlobalPoseToLocal);
++  transformed_plan.header.frame_id = costmap_ros_->getBaseFrameID();
++  transformed_plan.header.stamp = pose.header.stamp;
++
++  // Remove the portion of the global plan that we've already passed so we don't
++  // process it on the next iteration (this is called path pruning)
++  global_plan_.poses.erase(begin(global_plan_.poses), transformation_begin);
++  global_pub_->publish(transformed_plan);
++
++  if (transformed_plan.poses.empty())
++  {
++    throw nav2_core::PlannerException("Resulting plan has 0 poses in it.");
++  }
++
++  return transformed_plan;
++}
++
++bool PurePursuitController::transformPose(const std::shared_ptr<tf2_ros::Buffer> tf, const std::string frame,
++                                          const geometry_msgs::msg::PoseStamped& in_pose,
++                                          geometry_msgs::msg::PoseStamped& out_pose,
++                                          const rclcpp::Duration& transform_tolerance) const
++{
++  // Implementation taken as is fron nav_2d_utils in nav2_dwb_controller
++
++  if (in_pose.header.frame_id == frame)
++  {
++    out_pose = in_pose;
++    return true;
++  }
++
++  try
++  {
++    tf->transform(in_pose, out_pose, frame);
++    return true;
++  }
++  catch (tf2::ExtrapolationException& ex)
++  {
++    auto transform = tf->lookupTransform(frame, in_pose.header.frame_id, tf2::TimePointZero);
++    if ((rclcpp::Time(in_pose.header.stamp) - rclcpp::Time(transform.header.stamp)) > transform_tolerance)
++    {
++      RCLCPP_ERROR(rclcpp::get_logger("tf_help"), "Transform data too old when converting from %s to %s",
++                   in_pose.header.frame_id.c_str(), frame.c_str());
++      RCLCPP_ERROR(rclcpp::get_logger("tf_help"), "Data time: %ds %uns, Transform time: %ds %uns",
++                   in_pose.header.stamp.sec, in_pose.header.stamp.nanosec, transform.header.stamp.sec,
++                   transform.header.stamp.nanosec);
++      return false;
++    }
++    else
++    {
++      tf2::doTransform(in_pose, out_pose, transform);
++      return true;
++    }
++  }
++  catch (tf2::TransformException& ex)
++  {
++    RCLCPP_ERROR(rclcpp::get_logger("tf_help"), "Exception in transformPose: %s", ex.what());
++    return false;
++  }
++  return false;
++}
++
++// Copy-paste from regulated controller
++void PurePursuitController::setSpeedLimit(const double& speed_limit, const bool& percentage)
++{
++  if (speed_limit == nav2_costmap_2d::NO_SPEED_LIMIT)
++  {
++    // Restore default value
++    desired_linear_vel_ = base_desired_linear_vel_;
++  }
++  else
++  {
++    if (percentage)
++    {
++      // Speed limit is expressed in % from maximum speed of robot
++      desired_linear_vel_ = base_desired_linear_vel_ * speed_limit / 100.0;
++    }
++    else
++    {
++      // Speed limit is expressed in absolute value
++      desired_linear_vel_ = speed_limit;
++    }
++  }
++}
++
++}  // namespace nav2_pure_pursuit_controller
++
++// Register this controller as a nav2_core plugin
++PLUGINLIB_EXPORT_CLASS(nav2_pure_pursuit_controller::PurePursuitController, nav2_core::Controller)
+\ No newline at end of file
