@@ -1,0 +1,9 @@
+<class_libraries>
+    <library path="spinning_controller">
+        <class type="spinning_controller::SpinningController" base_class_type="nav2_core::Controller">
+            <description>
+                spinning_controller
+            </description>
+        </class>
+    </library>
+</class_libraries>
