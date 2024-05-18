@@ -1,15 +1,18 @@
 cmake_minimum_required(VERSION 3.5)
 project(spinning_controller)
 
+set(CMAKE_CXX_STANDARD 20)
+
 find_package(ament_cmake REQUIRED)
 find_package(nav2_common REQUIRED)
-find_package(angles REQUIRED)
-find_package(dwb_core REQUIRED)
 find_package(nav_2d_msgs REQUIRED)
-find_package(nav_2d_utils REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(nav2_util REQUIRED)
+
+# Controller packages:
+find_package(dwb_core REQUIRED)
+# find_package(nav2_regulated_pure_pursuit_controller REQUIRED)
 
 nav2_package()
 
@@ -18,13 +21,13 @@ include_directories(
 )
 
 set(dependencies
-  angles
-  dwb_core
   nav_2d_msgs
-  nav_2d_utils
   pluginlib
   rclcpp
   nav2_util
+  # Controller packages
+  dwb_core
+  # nav2_regulated_pure_pursuit_controller
 )
 
 add_library(spinning_controller SHARED
