@@ -1,14 +1,14 @@
 from typing import Iterable, Optional
 from collections import deque
 
-from masks import ProbLidarMask, BoolLidarMask
+from .masks import ProbLidarMask, BoolLidarMask
 
 def sliding_prob_lidar_mask(
             masks: Iterable[BoolLidarMask],
             window_size: int,
         ) -> Iterable[ProbLidarMask]:
     window = deque(maxlen=None if window_size is None else window_size+1)
-    prob_mask : ProbLidarMask = ProbLidarMask.total_mask(0.0)
+    prob_mask : ProbLidarMask | float = 0.0
 
 
     for mask in masks:
@@ -33,7 +33,7 @@ def sliding_prob_lidar_mask(
             # Compute the mask manually during the warmup
             prob_mask = (1.0/len(window))*sum(
                 window,
-                ProbLidarMask.total_mask(0.0),
+                0.0,
             )
 
         yield prob_mask

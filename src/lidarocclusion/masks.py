@@ -24,7 +24,7 @@ import copy
 
 import portion
 
-class LidarMask[D]:
+class LidarMask(Generic[D]):
     '''Signal of type [0, 2pi] -> D representing a Lidar occlusion mask.'''
     # Keys should be type T
     _values: np.ndarray
