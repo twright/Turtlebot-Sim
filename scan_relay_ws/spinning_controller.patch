@@ -1,0 +1,15 @@
+diff --git a/nav2_bringup/params/nav2_params.yaml b/nav2_bringup/params/nav2_params.yaml
+index 5f4b08f6..afa79bd3 100644
+--- a/nav2_bringup/params/nav2_params.yaml
++++ b/nav2_bringup/params/nav2_params.yaml
+@@ -136,9 +136,8 @@ controller_server:
+       plugin: "nav2_controller::SimpleGoalChecker"
+       xy_goal_tolerance: 0.25
+       yaw_goal_tolerance: 0.25
+-    # DWB parameters
+     FollowPath:
+-      plugin: "dwb_core::DWBLocalPlanner"
++      plugin: "spinning_controller::SpinningController" # In Iron and older versions, "/" was used instead of "::"
+       debug_trajectory_details: True
+       min_vel_x: 0.0
+       min_vel_y: 0.0

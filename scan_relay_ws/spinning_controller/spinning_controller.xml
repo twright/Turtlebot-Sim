@@ -1,0 +1,14 @@
+<class_libraries>
+    <library path="spinning_controller">
+        <class type="spinning_controller::DWBSpinningController" base_class_type="nav2_core::Controller">
+            <description>
+                A DWB specialization of the spinning controller.
+            </description>
+        </class>
+        <class type="spinning_controller::RegulatedSpinningPurePursuitController" base_class_type="nav2_core::Controller">
+            <description>
+                A Regulated Pure Pursuit specialization of the spinning controller.
+            </description>
+        </class>
+    </library>
+</class_libraries>

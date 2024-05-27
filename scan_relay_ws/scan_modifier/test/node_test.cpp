@@ -10,9 +10,9 @@ TEST(scan_modifier, lidar_ranges)
   using namespace scan;
   // Create range with the data 0..359 (inclusive), mimicking that the lidar measures something from 0..359 meters away
   auto ranges = std::ranges::iota_view{ 0, 360 };
-  for (auto i = 0; i < 361; i++)
+  for (std::vector<float>::size_type i = 0; i < 361; i++)
   {
-    for (auto j = i; j < 361; j++)
+    for (std::vector<float>::size_type j = i; j < 361; j++)
     {
       auto angle_rad_begin = degree_to_rad<float>(i) + degree_to_rad<float>(1) / 2;  // Avoid rounding errors
       auto angle_rad_end = degree_to_rad<float>(j) + degree_to_rad<float>(1) / 2;
