@@ -9,6 +9,7 @@ find_package(nav_2d_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(nav2_util REQUIRED)
+find_package(spin_interfaces REQUIRED)
 
 # Controller packages:
 find_package(dwb_core REQUIRED)
@@ -25,6 +26,7 @@ set(dependencies
   pluginlib
   rclcpp
   nav2_util
+  spin_interfaces
   # Controller packages
   dwb_core
   # nav2_regulated_pure_pursuit_controller

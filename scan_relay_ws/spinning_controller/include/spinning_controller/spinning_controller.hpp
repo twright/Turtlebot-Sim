@@ -15,21 +15,10 @@
 
 #include "nav2_core/controller.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "spin_interfaces/msg/spin_periodic_commands.hpp"
 
 namespace spinning_controller
 {
-
-struct SpinInstructions
-{
-  struct Instruction
-  {
-    double omega;
-    double duration;
-  };
-
-  std::vector<Instruction> instructions;
-  double period;
-};
 
 template <typename T>
 concept is_nav2_controller = std::derived_from<T, nav2_core::Controller>;
@@ -47,10 +36,15 @@ public:
     logger_ = node->get_logger();
     clock_ = node->get_clock();
     last_spin_ = clock_->now().seconds();
-    period_start_ = clock_->now().seconds();
 
-    std::vector<SpinInstructions::Instruction> instrcts{ { { 1.57, 1.0 }, { -1.57, 1.0 } } };
-    instructions_ = { std::move(instrcts), 5 };
+    spin_config_sub_ = node->create_subscription<spin_interfaces::msg::SpinPeriodicCommands>(
+        "/spin_config", rclcpp::SystemDefaultsQoS(), [this](spin_interfaces::msg::SpinPeriodicCommands::SharedPtr msg) {
+          RCLCPP_INFO(logger_, "SpinningController::lambda");
+          cmds_ = msg;
+        });
+
+    cmds_ = std::make_shared<spin_interfaces::msg::SpinPeriodicCommands>();
+    cmds_->period = 5.0;
 
     RCLCPP_INFO(logger_, "SpinningController::configure");
   }
@@ -70,45 +64,53 @@ private:
     // TODO: Somewhere assert that sum of instruction durations is less than total duration
     // using LinearVec3 = decltype(cmd_vel.twist.linear);
 
-    auto now = clock_->now().seconds();
+    constexpr auto do_spin = [](auto& cmd_vel, auto omega) {
+      cmd_vel.twist.linear.x = 0.0;
+      cmd_vel.twist.linear.y = 0.0;
+      cmd_vel.twist.linear.z = 0.0;
+      cmd_vel.twist.angular.z = omega;
+    };
 
-    // Check if we need to spin
-    for (size_t i = 0; i < instructions_.instructions.size(); i++)
+    if (!cmds_ || cmds_->commands.empty())
     {
-      auto end_it = instructions_.instructions.begin() + i + 1;
-      auto time_delta = std::accumulate(instructions_.instructions.begin(), end_it, 0.0,
-                                        [](auto res, auto instr) { return res + instr.duration; });
-      if (last_spin_ < period_start_ + time_delta)
-      {
-        last_spin_ = now;
-        cmd_vel.twist.linear.x = 0.0;
-        cmd_vel.twist.linear.y = 0.0;
-        cmd_vel.twist.linear.z = 0.0;
+      RCLCPP_INFO(logger_, "no cmd");
+      return;
+    }
 
-        cmd_vel.twist.angular.z = instructions_.instructions[i].omega;
-        RCLCPP_INFO(logger_, "Spinning: %f, %f, %f, %f", last_spin_, time_delta, period_start_,
-                    instructions_.instructions[i].duration);
+    auto now = clock_->now().seconds();
+    auto delta = now - last_spin_;
+
+    if (delta > cmds_->period)
+    {
+      // Start new period and start by doing that command
+      last_spin_ = now;
+      do_spin(cmd_vel, cmds_->commands[0].omega);
+      RCLCPP_INFO(logger_, "new period");
+      return;
+    }
+
+    // Find command to execute
+    for (const auto& cmd : cmds_->commands)
+    {
+      if (delta < cmd.duration)
+      {
+        do_spin(cmd_vel, cmd.omega);
+        RCLCPP_INFO(logger_, "Command: %f", cmd.omega);
         return;
       }
-      else
-      {
-        RCLCPP_INFO(logger_, "Not spinning: %f, %f, %f, %f", last_spin_, time_delta, period_start_,
-                    instructions_.instructions[i].duration);
-      }
+      delta -= cmd.duration;
     }
-    if (period_start_ + instructions_.period < now)
-    {
-      RCLCPP_INFO(logger_, "New period");
-      period_start_ = now;
-      last_spin_ = now;
-    }
+
+    // If we reach here, then do original command (no spin)
+    RCLCPP_INFO(logger_, "orig command");
+    return;
   }
 
   rclcpp::Logger logger_{ rclcpp::get_logger("SpinningController") };
   rclcpp::Clock::SharedPtr clock_;
   double last_spin_;
-  double period_start_;
-  SpinInstructions instructions_{};
+  spin_interfaces::msg::SpinPeriodicCommands::SharedPtr cmds_{};
+  rclcpp::Subscription<spin_interfaces::msg::SpinPeriodicCommands>::SharedPtr spin_config_sub_;
 };
 
 }  // namespace spinning_controller
