@@ -1,15 +1,31 @@
 diff --git a/nav2_bringup/params/nav2_params.yaml b/nav2_bringup/params/nav2_params.yaml
-index 5f4b08f6..afa79bd3 100644
+index 5f4b08f6..1162ed38 100644
 --- a/nav2_bringup/params/nav2_params.yaml
 +++ b/nav2_bringup/params/nav2_params.yaml
-@@ -136,9 +136,8 @@ controller_server:
+@@ -136,9 +136,10 @@ controller_server:
        plugin: "nav2_controller::SimpleGoalChecker"
        xy_goal_tolerance: 0.25
        yaw_goal_tolerance: 0.25
 -    # DWB parameters
      FollowPath:
 -      plugin: "dwb_core::DWBLocalPlanner"
-+      plugin: "spinning_controller::SpinningController" # In Iron and older versions, "/" was used instead of "::"
++      plugin: "spinning_controller::DWBSpinningController" # In Iron and older versions, "/" was used instead of "::"
++      spin_commands: [0.0, 0.0]
++      spin_period: 5.0
        debug_trajectory_details: True
        min_vel_x: 0.0
        min_vel_y: 0.0
+@@ -178,6 +179,13 @@ controller_server:
+       RotateToGoal.scale: 32.0
+       RotateToGoal.slowing_factor: 5.0
+       RotateToGoal.lookahead_time: -1.0
++    # FollowPath:
++    #   plugin: "spinning_controller::RegulatedSpinningPurePursuitController" # In Iron and older versions, "/" was used instead of "::"
++    #   debug_trajectory_details: True
++    #   desired_linear_vel: 0.2
++    #   lookahead_dist: 0.4
++    #   max_angular_vel: 1.0
++    #   transform_tolerance: 1.0
+ 
+ local_costmap:
+   local_costmap:
