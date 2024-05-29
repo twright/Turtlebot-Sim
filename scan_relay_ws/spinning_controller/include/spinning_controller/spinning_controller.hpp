@@ -132,12 +132,13 @@ private:
       cmd_vel.twist.linear.x = 0.0;
       cmd_vel.twist.linear.y = 0.0;
       cmd_vel.twist.linear.z = 0.0;
+      cmd_vel.twist.angular.x = 0.0;
+      cmd_vel.twist.angular.y = 0.0;
       cmd_vel.twist.angular.z = omega;
     };
 
     if (!cmds_ || cmds_->commands.empty())
     {
-      // RCLCPP_INFO(logger_, "no cmd");
       return;
     }
 
