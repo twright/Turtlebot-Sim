@@ -1,0 +1,277 @@
+[rviz2-5] [INFO] [1716978815.782246397] [rviz_navigation_dialog_action_client]: NavigateToPose will be called using the BT Navigator's default behavior tree.
+[component_container_isolated-6] [INFO] [1716978815.783108419] [bt_navigator]: Begin navigating from current location (-1.89, -0.57) to (1.74, -0.62)
+[component_container_isolated-6] [INFO] [1716978815.803784777] [controller_server]: Received a goal, begin computing control effort.
+[component_container_isolated-6] [WARN] [1716978815.803839798] [controller_server]: No goal checker was specified in parameter 'current_goal_checker'. Server will use only plugin loaded general_goal_checker . This warning will appear once.
+[component_container_isolated-6] [INFO] [1716978815.805902341] [controller_server]: new period
+[component_container_isolated-6] [INFO] [1716978815.855446343] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978815.905378928] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978815.955365004] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.005401472] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.055510371] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.105450365] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.155435309] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.205461484] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.256233717] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.306354506] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.356124898] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.405403482] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.455906866] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.505502927] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.555596337] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.606320470] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.656571199] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.706106301] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978816.756547413] [controller_server]: Command: 1.570000
+
+We are doing left rotation for 1716978816.806572548 - 1716978815.805902341 seconds = 1.000 seconds
+
+[component_container_isolated-6] [INFO] [1716978816.806572548] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978816.854025707] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978816.856680351] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978816.905550247] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978816.955607500] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.005610261] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.055503768] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.106683981] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.155717558] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.205383038] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.255520029] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.305387099] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.355434948] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.405578794] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.458424729] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.506406065] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.556400407] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.606190573] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.655504343] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.705616085] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978817.755620617] [controller_server]: Command: -1.570000
+
+We are doing right rotation for 1716978817.805578294 - 1716978816.806572548 = 0.999 seconds
+
+[component_container_isolated-6] [INFO] [1716978817.805578294] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978817.855448770] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978817.904014990] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978817.905683042] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978817.955937275] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.006239218] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.056324662] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.106158023] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.155381851] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.205405890] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.255452808] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.305384280] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.355434665] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.405691604] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.455601064] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.505417050] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.555392775] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.605378436] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.655356544] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.705406886] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.755433984] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.805549573] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.855650095] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.904057741] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978818.905511371] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978818.955421542] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.005473445] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.055420000] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.105432000] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.156021537] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.206467166] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.255864021] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.306364144] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.356510794] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.405684400] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.455724678] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.505567116] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.555485235] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.605498141] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.655753394] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.705527297] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.755531382] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.805539843] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.855874335] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.905497264] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978819.954048606] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978819.955782233] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.005628046] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.055579411] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.105753974] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.155572311] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.205507287] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.255656495] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.305579856] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.355774101] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.406171145] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.455515753] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.505615081] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.556454215] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.606208290] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.655838612] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.705538829] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978820.755840963] [controller_server]: orig command
+
+We are doing original plan for 1716978820.805582433 - 1716978817.805578294 = 3.000 seconds
+
+[component_container_isolated-6] [INFO] [1716978820.805582433] [controller_server]: new period
+[component_container_isolated-6] [INFO] [1716978820.855468255] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978820.905529574] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978820.954014870] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978820.955697377] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.005624473] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.056302012] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.105779016] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.155525296] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.205515959] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.255718640] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.305499423] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.355562694] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.405677715] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.455782080] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.505756031] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.556356151] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.605587703] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.656300245] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.705697400] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978821.755792807] [controller_server]: Command: 1.570000
+
+We are doing left rotation for 1716978821.805796383 - 1716978820.805582433 seconds = 1.000 seconds
+
+[component_container_isolated-6] [INFO] [1716978821.805796383] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978821.855769752] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978821.906460113] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978821.955878643] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.004055136] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978822.005955948] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.055848981] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.107039476] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.155963731] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.205737037] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.255896490] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.305720199] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.355952913] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.405750084] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.455769528] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.505640808] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.557142539] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.606617858] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.655667264] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.705603793] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978822.755605177] [controller_server]: Command: -1.570000
+
+We are doing right rotation for 1716978822.805695445 - 1716978821.805796383 = 0.999 seconds
+
+[component_container_isolated-6] [INFO] [1716978822.805695445] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978822.855581913] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978822.905532992] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978822.955406130] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.004013020] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978823.005508270] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.055487336] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.105598325] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.155778182] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.205493210] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.255490711] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.306334690] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.355841915] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.405580831] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.455438043] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.505626355] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.555565878] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.605547429] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.655621749] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.705766511] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.755351593] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.805386036] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.855485891] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.905358494] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978823.955395222] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.005395755] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.054046740] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978824.055550809] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.106031950] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.155354222] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.205295496] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.255472764] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.305409219] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.355847953] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.406249579] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.455625281] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.505430757] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.555372771] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.605512637] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.655429293] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.705430816] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.755556627] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.805408938] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.855522743] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.905602378] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978824.955427564] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.005478488] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.056300006] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.104018798] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978825.106295016] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.156281099] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.206361805] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.255404539] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.305358156] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.355460338] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.405597594] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.455685001] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.505840679] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.556068434] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.605310335] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.655536635] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.705463116] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.755413659] [controller_server]: orig command
+[component_container_isolated-6] [INFO] [1716978825.806205760] [controller_server]: orig command
+
+We are doing original plan for 1716978825.855807546 - 1716978822.805695445 = 3.050 seconds
+
+[component_container_isolated-6] [INFO] [1716978825.855807546] [controller_server]: new period
+[component_container_isolated-6] [INFO] [1716978825.905547379] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978825.955540958] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.005622694] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.055790327] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.104113526] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978826.106612846] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.155816080] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.205428452] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.255417661] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.305476395] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.355480058] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.405540994] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.455456920] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.505541732] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.555617199] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.605567526] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.655524283] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.705854705] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.756388457] [controller_server]: Command: 1.570000
+[component_container_isolated-6] [INFO] [1716978826.806588049] [controller_server]: Command: 1.570000
+
+We are doing left rotation for 1716978826.856374855 - 1716978825.855807546 seconds = 1.000 seconds
+
+[component_container_isolated-6] [INFO] [1716978826.856374855] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978826.906394149] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978826.956396428] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.006236212] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.055482639] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.105627796] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.154025205] [controller_server]: Passing new path to controller.
+[component_container_isolated-6] [INFO] [1716978827.155619874] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.205413658] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.255515117] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.305499032] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.355515347] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.405512870] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.455574827] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.505968346] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.556600976] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.606258002] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.655442348] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.705573084] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.755474013] [controller_server]: Command: -1.570000
+[component_container_isolated-6] [INFO] [1716978827.805566820] [controller_server]: Command: -1.570000
