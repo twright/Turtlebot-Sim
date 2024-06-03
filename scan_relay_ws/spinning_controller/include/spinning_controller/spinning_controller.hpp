@@ -40,12 +40,7 @@ public:
     last_spin_ = clock_->now().seconds();
     plugin_name_ = name;
 
-    spin_config_sub_ = node->create_subscription<spin_interfaces::msg::SpinPeriodicCommands>(
-        "/spin_config", rclcpp::SystemDefaultsQoS(), [this](spin_interfaces::msg::SpinPeriodicCommands::SharedPtr msg) {
-          RCLCPP_INFO(logger_, "SpinningController::lambda");
-          cmds_ = msg;
-        });
-
+    // TODO: We are not using cmds_ for anything
     cmds_ = std::make_shared<spin_interfaces::msg::SpinPeriodicCommands>();
     nav2_util::declare_parameter_if_not_declared(node, plugin_name_ + ".spin_period", rclcpp::ParameterValue(5.0));
     node->get_parameter(plugin_name_ + ".spin_period", cmds_->period);
@@ -175,7 +170,6 @@ private:
   rclcpp::Clock::SharedPtr clock_;
   double last_spin_;
   spin_interfaces::msg::SpinPeriodicCommands::SharedPtr cmds_{};
-  rclcpp::Subscription<spin_interfaces::msg::SpinPeriodicCommands>::SharedPtr spin_config_sub_;
   std::string plugin_name_;
 
   std::mutex param_mutex_;

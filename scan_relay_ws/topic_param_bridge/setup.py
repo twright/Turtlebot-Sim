@@ -1,25 +1,25 @@
 from setuptools import find_packages, setup
 
-package_name = 'topic_param_bridge'
+package_name = "topic_param_bridge"
 
 setup(
     name=package_name,
-    version='0.0.0',
-    packages=find_packages(exclude=['test']),
+    version="0.0.0",
+    packages=find_packages(exclude=["test"]),
     data_files=[
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+        ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
+        ("share/" + package_name, ["package.xml"]),
     ],
-    install_requires=['setuptools'],
+    install_requires=["setuptools"],
     zip_safe=True,
-    maintainer='au610920',
-    maintainer_email='mortenhaahrkristensen@gmail.com',
-    description='TODO: Package description',
-    license='Apache-2.0',
-    tests_require=['pytest'],
+    maintainer="Morten Haahr Kristensen",
+    maintainer_email="mhk@ece.au.dk",
+    description="Bridge that listens to a topic and forwards it as a parameter",
+    license="Apache-2.0",
+    tests_require=["pytest"],
     entry_points={
-        'console_scripts': [
+        "console_scripts": [
+            "param_bridge = topic_param_bridge.topic_param_bridge:main",
         ],
     },
 )

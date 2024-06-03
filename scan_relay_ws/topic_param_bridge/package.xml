@@ -3,9 +3,16 @@
 <package format="3">
   <name>topic_param_bridge</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="mortenhaahrkristensen@gmail.com">au610920</maintainer>
+  <description>Bridge that listens to a topic and forwards it as a parameter</description>
+  <maintainer email="mhk@ece.au.dk">Morten Haahr Kristensen</maintainer>
   <license>Apache-2.0</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>spin_interface</exec_depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>ros2cli</exec_depend>
+  <exec_depend>ros2node</exec_depend>
+  <exec_depend>ros2service</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
