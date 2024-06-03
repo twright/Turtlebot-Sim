@@ -30,19 +30,19 @@ ScanModifierNode::ScanModifierNode() : Node("scan_modifier")
   scan_sub_ = create_subscription<sensor_msgs::msg::LaserScan>(
       "/scan", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::scan_sub_callback, this, _1));
   publisher_ = create_publisher<sensor_msgs::msg::LaserScan>("/scan_safe", rclcpp::SensorDataQoS());
-  config_sub_ = create_subscription<std_msgs::msg::Float32MultiArray>(
+  config_sub_ = create_subscription<std_msgs::msg::UInt16MultiArray>(
       "/scan_config", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::config_sub_callback, this, _1));
 
   RCLCPP_INFO(get_logger(), "Scan modifier node started!");
 }
 
-void ScanModifierNode::config_sub_callback(const std_msgs::msg::Float32MultiArray::SharedPtr config)
+void ScanModifierNode::config_sub_callback(const std_msgs::msg::UInt16MultiArray::SharedPtr config)
 {
   if (config->data.size() == 2)
   {
     lidar_filt_lower_ = config->data[0];
     lidar_filt_upper_ = config->data[1];
-    RCLCPP_INFO(get_logger(), "Setting non-occluded area to %f - %f", lidar_filt_lower_, lidar_filt_upper_);
+    RCLCPP_INFO(get_logger(), "Setting non-occluded area to %d - %d", lidar_filt_lower_, lidar_filt_upper_);
   }
   else
   {
@@ -65,12 +65,15 @@ void ScanModifierNode::scan_sub_callback(const sensor_msgs::msg::LaserScan::Shar
 
   RCLCPP_INFO(get_logger(), "OG sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
 
-  laser_msg->angle_min = lidar_filt_lower_;
-  laser_msg->angle_max = lidar_filt_upper_;
+  auto laser_size = laser_msg->ranges.size();
+  laser_msg->angle_min = lidar_filt_lower_ / laser_size * 2 * M_PI;
+  laser_msg->angle_max = lidar_filt_upper_ / laser_size * 2 * M_PI;
   auto result = calculate_lidar_ranges(lidar_filt_lower_, lidar_filt_upper_, laser_msg->ranges);
 
+  // TODO: Probably bug in the resizes...
   laser_msg->ranges.resize(result.size());
   laser_msg->intensities.resize(result.size());
+
   laser_msg->ranges = std::move(result);
   RCLCPP_INFO(get_logger(), "New sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
 
