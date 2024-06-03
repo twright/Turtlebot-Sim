@@ -1,4 +1,5 @@
 from collections import namedtuple
+import subprocess
 
 import rclpy
 from rclpy.node import Node
@@ -59,52 +60,62 @@ class MinimalSubscriber(Node):
         self.subscription  # prevent unused variable warning
 
     def listener_callback(self, msg):
-        self.get_logger().info('I heard: "%s"' % msg)
+        self.get_logger().info(f'Heard: "{msg}"')
 
-        node_name = "/controller_server"
-        spin_commands = [1.57, 1.0, -1.57, 1.0]
-        spin_period = 5.0
+        spin_commands = [
+            value for cmd in msg.commands for value in (cmd.omega, cmd.duration)
+        ]
+        spin_period = msg.period
 
-        commands_parameter = Parameter()
-        period_parameter = Parameter()
-        period_parameter.name = "spin_period"
-        period_parameter_value = ParameterValue()
-        period_parameter_value.type = ParameterType.PARAMETER_DOUBLE
-        period_parameter_value.double_value = spin_period
-        period_parameter.value = period_parameter_value
+        self.get_logger().info(f'Sending: "{spin_commands}" and "{spin_period}"')
+        cmd_str = f"""ros2 param set /controller_server FollowPath.spin_commands "{spin_commands}" """
+        subprocess.run(cmd_str, shell=True)
+        cmd_str = f"""ros2 param set /controller_server FollowPath.spin_period {spin_period} """
+        subprocess.run(cmd_str, shell=True)
 
-        commands_parameter_value = ParameterValue()
-        commands_parameter_value.type = ParameterType.PARAMETER_DOUBLE_ARRAY
-        commands_parameter_value._double_array_value = spin_commands
-        commands_parameter.name = "spin_commands"
-        commands_parameter.value = commands_parameter_value
+        """Note: Attempt at doing it "the right way" but it doesn't work. The error is due to DirectNode and not having `arg`"""
+        # node_name = "/controller_server"
+        # commands_parameter = Parameter()
+        # period_parameter = Parameter()
+        # period_parameter.name = "spin_period"
+        # period_parameter_value = ParameterValue()
+        # period_parameter_value.type = ParameterType.PARAMETER_DOUBLE
+        # period_parameter_value.double_value = spin_period
+        # period_parameter.value = period_parameter_value
 
-        with NodeStrategy([]) as node:
-            node_names = get_node_names(node=node, include_hidden_nodes=False)
+        # commands_parameter_value = ParameterValue()
+        # commands_parameter_value.type = ParameterType.PARAMETER_DOUBLE_ARRAY
+        # commands_parameter_value._double_array_value = spin_commands
+        # commands_parameter.name = "spin_commands"
+        # commands_parameter.value = commands_parameter_value
 
-        if node_name not in {n.full_name for n in node_names}:
-            self.get_logger().error("Node not found")
-            return
+        # with NodeStrategy([]) as node:
+        #     node_names = get_node_names(node=node, include_hidden_nodes=False)
 
-        with DirectNode() as node:
-            response = call_set_parameters(
-                node=node,
-                node_name=node_name,
-                parameters=[commands_parameter, period_parameter],
-            )
+        # if node_name not in {n.full_name for n in node_names}:
+        #     self.get_logger().error("Node not found")
+        #     return
 
-            # output response
-            for result in response.results:
-                if result.successful:
-                    msg = "Set parameter successful"
-                    if result.reason:
-                        msg += ": " + result.reason
-                    self.get_logger().info(msg)
-                else:
-                    msg = "Setting parameter failed"
-                    if result.reason:
-                        msg += ": " + result.reason
-                    self.get_logger().error(msg)
+        # args_mock = type("", (object,), {"argv": 0})()
+        # with DirectNode(args_mock) as node:
+        #     response = call_set_parameters(
+        #         node=node,
+        #         node_name=node_name,
+        #         parameters=[commands_parameter, period_parameter],
+        #     )
+
+        #     # output response
+        #     for result in response.results:
+        #         if result.successful:
+        #             msg = "Set parameter successful"
+        #             if result.reason:
+        #                 msg += ": " + result.reason
+        #             self.get_logger().info(msg)
+        #         else:
+        #             msg = "Setting parameter failed"
+        #             if result.reason:
+        #                 msg += ": " + result.reason
+        #             self.get_logger().error(msg)
 
 
 def main(args=None):
