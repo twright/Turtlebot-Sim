@@ -51,6 +51,15 @@ services:
               capabilities: [ gpu ]
     environment:
       - NVIDIA_DRIVER_CAPABILITIES=all
+  simnogpu:
+    extends: devnogpu
+    command: ros2 launch turtlebot4_ignition_bringup turtlebot4_ignition.launch.py world:=maze slam:=true nav2:=true rviz:=true
+  simmesa:
+    extends: devmesa
+    command: ros2 launch turtlebot4_ignition_bringup turtlebot4_ignition.launch.py world:=maze slam:=true nav2:=true rviz:=true
+  simnvidia:
+    extends: devnvidia
+    command: ros2 launch turtlebot4_ignition_bringup turtlebot4_ignition.launch.py world:=maze slam:=true nav2:=true rviz:=true
 
 volumes:
   rosuserdata:
