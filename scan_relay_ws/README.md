@@ -45,6 +45,7 @@ FollowPath:
 1. Run the simulation and see the behavior
    - Note that in the patch above it initialises the spin commands to 0
 
+TODO: Add info about `rosdep install -i --from-path navigation2 --rosdistro humble` somewhere
 
 # Sources:
 - Developing with the Nav2 stack: https://navigation.ros.org/
