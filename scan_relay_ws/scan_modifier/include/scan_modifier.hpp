@@ -27,7 +27,7 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr publisher_;
 
-  uint16_t lidar_filt_upper_ = 360;  // TODO: Currently hardcoded to work with TB3 simulation...
+  uint16_t lidar_filt_upper_;  // Initially configured by parameter - otherwise runtime error
   uint16_t lidar_filt_lower_ = 0;
 };
 
@@ -46,4 +46,5 @@ static ScanModifierNode::ranges_t calculate_lidar_ranges(uint16_t sample_begin, 
   std::copy_n(lidar_ranges.begin() + sample_begin, size, std::back_inserter(occluded_ranges));
   return occluded_ranges;
 }
+
 }  // namespace scan

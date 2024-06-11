@@ -44,6 +44,7 @@ def generate_launch_description():
     scan_node = Node(
         package="scan_modifier",
         executable="scan_node",
+        parameters=[{"scan_ranges_size": 1080}],
     )
 
     spin_config_node = Node(
@@ -53,7 +54,7 @@ def generate_launch_description():
 
     ld.add_action(localization_ld)
     ld.add_action(nav2_ld)
-    # ld.add_action(scan_node)
+    ld.add_action(scan_node)
     # ld.add_action(spin_config_node)
 
     return ld

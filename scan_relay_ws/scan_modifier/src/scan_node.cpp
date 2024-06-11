@@ -1,12 +1,25 @@
 #include "scan_modifier.hpp"
 #include <sstream>
 #include <cmath>
+#include <rclcpp/rclcpp.hpp>
 
 namespace scan
 {
 
 using namespace std::placeholders;
 using ranges_t = ScanModifierNode::ranges_t;
+
+// Copied from: /nav2_util/node_utils.hpp
+template <typename NodeT>
+void declare_parameter_if_not_declared(
+    NodeT node, const std::string& param_name, const rclcpp::ParameterType& param_type,
+    const rcl_interfaces::msg::ParameterDescriptor& parameter_descriptor = rcl_interfaces::msg::ParameterDescriptor())
+{
+  if (!node->has_parameter(param_name))
+  {
+    node->declare_parameter(param_name, param_type, parameter_descriptor);
+  }
+}
 
 void print_laser(const sensor_msgs::msg::LaserScan& msg, const rclcpp::Logger& logger)
 {
@@ -22,7 +35,7 @@ void print_laser(const sensor_msgs::msg::LaserScan& msg, const rclcpp::Logger& l
     ss << ", ";
   }
   auto result = ss.str();
-  RCLCPP_DEBUG(logger, "Ranges: %s", result.c_str());
+  // RCLCPP_DEBUG(logger, "Ranges: %s", result.c_str());
 }
 
 ScanModifierNode::ScanModifierNode() : Node("scan_modifier")
@@ -33,7 +46,12 @@ ScanModifierNode::ScanModifierNode() : Node("scan_modifier")
   config_sub_ = create_subscription<std_msgs::msg::UInt16MultiArray>(
       "/scan_config", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::config_sub_callback, this, _1));
 
+  constexpr auto param_name = "scan_ranges_size";
+  this->declare_parameter(param_name, rclcpp::ParameterType::PARAMETER_INTEGER);
+  lidar_filt_upper_ = this->get_parameter(param_name).as_int();
+
   RCLCPP_INFO(get_logger(), "Scan modifier node started!");
+  RCLCPP_INFO(get_logger(), "Scan size: %d", lidar_filt_upper_);
 }
 
 void ScanModifierNode::config_sub_callback(const std_msgs::msg::UInt16MultiArray::SharedPtr config)
