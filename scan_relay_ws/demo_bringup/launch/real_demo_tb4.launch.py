@@ -22,6 +22,14 @@ def generate_launch_description():
         ]
     )
 
+    slam_launch_file = PathJoinSubstitution(
+        [
+            get_package_share_directory("turtlebot4_navigation"),
+            "launch",
+            "slam.launch.py",
+        ]
+    )
+
     nav2_launch_file = PathJoinSubstitution(
         [
             get_package_share_directory("turtlebot4_navigation"),
@@ -30,17 +38,31 @@ def generate_launch_description():
         ]
     )
 
-    params_path = PathJoinSubstitution([demo_bringup_dir, "config", "tb4_nav2.yaml"])
+    nav2_conf = PathJoinSubstitution([demo_bringup_dir, "config", "tb4_nav2.yaml"])
     map_path = PathJoinSubstitution([demo_bringup_dir, "maps", "office.yaml"])
+    localization_conf = PathJoinSubstitution(
+        [demo_bringup_dir, "config", "tb4_localization.yaml"]
+    )
+    slam_conf = PathJoinSubstitution([demo_bringup_dir, "config", "tb4_slam.yaml"])
 
     nav2_ld = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nav2_launch_file),
-        launch_arguments=[("params_file", params_path)],
+        launch_arguments=[("params_file", nav2_conf)],
     )
 
     localization_ld = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(localization_launch_file),
-        launch_arguments=[("map", map_path)],
+        launch_arguments=[
+            ("map", map_path),
+            ("params", localization_conf),
+        ],
+    )
+
+    slam_ld = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(slam_launch_file),
+        launch_arguments=[
+            ("params", slam_conf),
+        ],
     )
 
     scan_node = Node(
@@ -54,9 +76,10 @@ def generate_launch_description():
         executable="param_bridge",
     )
 
-    ld.add_action(localization_ld)
+    # ld.add_action(localization_ld)
+    ld.add_action(slam_ld)
     ld.add_action(nav2_ld)
     ld.add_action(scan_node)
-    # ld.add_action(spin_config_node)
+    ld.add_action(spin_config_node)
 
     return ld
