@@ -31,20 +31,4 @@ private:
   uint16_t lidar_filt_lower_ = 0;
 };
 
-/// Takes `lidar_ranges` and returns a new vector including only the samples between `sample_begin` and `sample_end`
-template <bool safe_mode = true>
-static ScanModifierNode::ranges_t calculate_lidar_ranges(uint16_t sample_begin, uint16_t sample_end,
-                                                         const auto& lidar_ranges)
-{
-  if constexpr (safe_mode)
-    assert(sample_end >= sample_begin);
-
-  auto size = sample_end - sample_begin;
-
-  ScanModifierNode::ranges_t occluded_ranges{};
-  occluded_ranges.reserve(size);
-  std::copy_n(lidar_ranges.begin() + sample_begin, size, std::back_inserter(occluded_ranges));
-  return occluded_ranges;
-}
-
 }  // namespace scan

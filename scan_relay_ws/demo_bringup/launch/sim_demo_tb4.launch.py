@@ -1,10 +1,11 @@
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-import os
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node
 from launch.substitutions import PathJoinSubstitution
+
+TURTLEBOT4_SIM_SCAN_SIZE = 640
 
 
 def generate_launch_description():
@@ -18,8 +19,9 @@ def generate_launch_description():
     tb4_ld = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(tb4_simulation_launch_file),
         launch_arguments=[
-            ("world", "maze"),
-            ("slam", "true"),
+            ("world", "warehouse"),
+            ("slam", "false"),
+            ("localization", "true"),
             ("nav2", "true"),
             ("rviz", "true"),
         ],
@@ -28,6 +30,8 @@ def generate_launch_description():
     scan_node = Node(
         package="scan_modifier",
         executable="scan_node",
+        parameters=[{"scan_ranges_size": TURTLEBOT4_SIM_SCAN_SIZE}],
+        # arguments=["--ros-args", "--log-level", "debug"],
     )
 
     spin_config_node = Node(

@@ -6,6 +6,8 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node
 
+TURTLEBOT4_REAL_SCAN_SIZE = 1080
+
 
 def generate_launch_description():
     ld = LaunchDescription([])
@@ -28,7 +30,7 @@ def generate_launch_description():
         ]
     )
 
-    params_path = PathJoinSubstitution([demo_bringup_dir, "config", "nav2.yaml"])
+    params_path = PathJoinSubstitution([demo_bringup_dir, "config", "tb4_nav2.yaml"])
     map_path = PathJoinSubstitution([demo_bringup_dir, "maps", "office.yaml"])
 
     nav2_ld = IncludeLaunchDescription(
@@ -44,7 +46,7 @@ def generate_launch_description():
     scan_node = Node(
         package="scan_modifier",
         executable="scan_node",
-        parameters=[{"scan_ranges_size": 1080}],
+        parameters=[{"scan_ranges_size": TURTLEBOT4_REAL_SCAN_SIZE}],
     )
 
     spin_config_node = Node(

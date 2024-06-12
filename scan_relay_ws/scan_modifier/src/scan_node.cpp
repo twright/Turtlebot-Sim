@@ -70,33 +70,20 @@ void ScanModifierNode::config_sub_callback(const std_msgs::msg::UInt16MultiArray
 
 void ScanModifierNode::scan_sub_callback(const sensor_msgs::msg::LaserScan::SharedPtr laser_msg)
 {
+  constexpr auto between = [](const auto& val, const auto& lower, const auto& upper) {
+    return val >= lower && val <= upper;
+  };
+
   const auto& logger = get_logger();
-  auto level = rcutils_logging_get_logger_effective_level(logger.get_name());
+  RCLCPP_DEBUG(get_logger(), "Data size: %ld. Scan config: %d, %d", laser_msg->ranges.size(), lidar_filt_lower_,
+               lidar_filt_upper_);
 
-  if (level == RCUTILS_LOG_SEVERITY_DEBUG)
+  for (size_t i = 0; i < laser_msg->ranges.size(); i++)
   {
-    RCLCPP_DEBUG(get_logger(), "OG msg:");
-    print_laser(*laser_msg, get_logger());
-  }
-
-  RCLCPP_DEBUG(get_logger(), "OG sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
-  RCLCPP_DEBUG(get_logger(), "Scan config: %d, %d", lidar_filt_lower_, lidar_filt_upper_);
-
-  auto laser_size = laser_msg->ranges.size();
-  laser_msg->angle_min = static_cast<float>(lidar_filt_lower_) / laser_size * 2 * M_PI;
-  laser_msg->angle_max = static_cast<float>(lidar_filt_upper_) / laser_size * 2 * M_PI;
-  auto result = calculate_lidar_ranges(lidar_filt_lower_, lidar_filt_upper_, laser_msg->ranges);
-
-  // TODO: Intensities are being incorrectly configured but since it is unused, it is OK for now
-  laser_msg->intensities.resize(result.size());
-
-  laser_msg->ranges = std::move(result);
-  RCLCPP_DEBUG(get_logger(), "New sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
-
-  if (level == RCUTILS_LOG_SEVERITY_DEBUG)
-  {
-    RCLCPP_DEBUG(get_logger(), "New msg:");
-    print_laser(*laser_msg, get_logger());
+    if (!between(i, lidar_filt_lower_, lidar_filt_upper_))
+    {
+      laser_msg->ranges[i] = -std::numeric_limits<float>::infinity();
+    }
   }
 
   publisher_->publish(*laser_msg);

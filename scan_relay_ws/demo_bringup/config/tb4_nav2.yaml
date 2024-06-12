@@ -152,7 +152,7 @@ local_costmap:
       height: 3
       resolution: 0.06
       robot_radius: 0.175
-      plugins: ["static_layer", "voxel_layer", "inflation_layer"]
+      plugins: ["voxel_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 4.0
@@ -168,7 +168,7 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: scan_safe
+          topic: /scan_safe
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -199,7 +199,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: scan_safe
+          topic: /scan_safe
           max_obstacle_height: 2.0
           clearing: True
           marking: True
