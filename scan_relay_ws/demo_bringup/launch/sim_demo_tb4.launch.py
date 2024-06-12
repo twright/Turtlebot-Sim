@@ -19,7 +19,7 @@ def generate_launch_description():
     tb4_ld = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(tb4_simulation_launch_file),
         launch_arguments=[
-            ("world", "warehouse"),
+            ("world", "maze"),
             ("slam", "true"),
             ("localization", "false"),
             ("nav2", "true"),
