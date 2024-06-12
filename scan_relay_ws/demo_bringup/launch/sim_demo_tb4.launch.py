@@ -20,8 +20,8 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(tb4_simulation_launch_file),
         launch_arguments=[
             ("world", "warehouse"),
-            ("slam", "false"),
-            ("localization", "true"),
+            ("slam", "true"),
+            ("localization", "false"),
             ("nav2", "true"),
             ("rviz", "true"),
         ],
