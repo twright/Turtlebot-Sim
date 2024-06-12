@@ -44,7 +44,7 @@ ScanModifierNode::ScanModifierNode() : Node("scan_modifier")
       "/scan", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::scan_sub_callback, this, _1));
   publisher_ = create_publisher<sensor_msgs::msg::LaserScan>("/scan_safe", rclcpp::SensorDataQoS());
   config_sub_ = create_subscription<std_msgs::msg::UInt16MultiArray>(
-      "/scan_config", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::config_sub_callback, this, _1));
+      "/scan_config", rclcpp::ServicesQoS(), std::bind(&ScanModifierNode::config_sub_callback, this, _1));
 
   constexpr auto param_name = "scan_ranges_size";
   this->declare_parameter(param_name, rclcpp::ParameterType::PARAMETER_INTEGER);
