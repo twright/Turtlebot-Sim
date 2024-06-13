@@ -15,7 +15,7 @@
 # @author Roni Kreinin (rkreinin@clearpathrobotics.com)
 #
 #
-# Slightly modified version that uses tells nav2 to use the local `nav2.yaml`:
+# Slightly modified version that uses tells nav2, slam and localization to use the local yaml files:
 # @author Morten Haahr Kristensen (mhk@ece.au.dk)
 
 
@@ -105,7 +105,13 @@ def generate_launch_description():
 
     demo_bringup_dir = get_package_share_directory("demo_bringup")
     demo_bringup_nav2_conf = PathJoinSubstitution(
-        [demo_bringup_dir, "config", "nav2.yaml"]
+        [demo_bringup_dir, "config", "tb4_nav2.yaml"]
+    )
+    demo_bringup_slam_conf = PathJoinSubstitution(
+        [demo_bringup_dir, "config", "tb4_slam.yaml"]
+    )
+    demo_bringup_localization_conf = PathJoinSubstitution(
+        [demo_bringup_dir, "config", "tb4_localization.yaml"]
     )
 
     # Paths
@@ -316,14 +322,22 @@ def generate_launch_description():
     # Localization
     localization = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([localization_launch]),
-        launch_arguments=[("namespace", namespace), ("use_sim_time", use_sim_time)],
+        launch_arguments=[
+            ("namespace", namespace),
+            ("use_sim_time", use_sim_time),
+            ("params", demo_bringup_localization_conf),
+        ],
         condition=IfCondition(LaunchConfiguration("localization")),
     )
 
     # SLAM
     slam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([slam_launch]),
-        launch_arguments=[("namespace", namespace), ("use_sim_time", use_sim_time)],
+        launch_arguments=[
+            ("namespace", namespace),
+            ("use_sim_time", use_sim_time),
+            ("params", demo_bringup_slam_conf),
+        ],
         condition=IfCondition(LaunchConfiguration("slam")),
     )
 

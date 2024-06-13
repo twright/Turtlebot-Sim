@@ -1,12 +1,25 @@
 #include "scan_modifier.hpp"
 #include <sstream>
 #include <cmath>
+#include <rclcpp/rclcpp.hpp>
 
 namespace scan
 {
 
 using namespace std::placeholders;
 using ranges_t = ScanModifierNode::ranges_t;
+
+// Copied from: /nav2_util/node_utils.hpp
+template <typename NodeT>
+void declare_parameter_if_not_declared(
+    NodeT node, const std::string& param_name, const rclcpp::ParameterType& param_type,
+    const rcl_interfaces::msg::ParameterDescriptor& parameter_descriptor = rcl_interfaces::msg::ParameterDescriptor())
+{
+  if (!node->has_parameter(param_name))
+  {
+    node->declare_parameter(param_name, param_type, parameter_descriptor);
+  }
+}
 
 void print_laser(const sensor_msgs::msg::LaserScan& msg, const rclcpp::Logger& logger)
 {
@@ -22,7 +35,7 @@ void print_laser(const sensor_msgs::msg::LaserScan& msg, const rclcpp::Logger& l
     ss << ", ";
   }
   auto result = ss.str();
-  RCLCPP_DEBUG(logger, "Ranges: %s", result.c_str());
+  // RCLCPP_DEBUG(logger, "Ranges: %s", result.c_str());
 }
 
 ScanModifierNode::ScanModifierNode() : Node("scan_modifier")
@@ -31,9 +44,14 @@ ScanModifierNode::ScanModifierNode() : Node("scan_modifier")
       "/scan", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::scan_sub_callback, this, _1));
   publisher_ = create_publisher<sensor_msgs::msg::LaserScan>("/scan_safe", rclcpp::SensorDataQoS());
   config_sub_ = create_subscription<std_msgs::msg::UInt16MultiArray>(
-      "/scan_config", rclcpp::SensorDataQoS(), std::bind(&ScanModifierNode::config_sub_callback, this, _1));
+      "/scan_config", rclcpp::ServicesQoS(), std::bind(&ScanModifierNode::config_sub_callback, this, _1));
+
+  constexpr auto param_name = "scan_ranges_size";
+  this->declare_parameter(param_name, rclcpp::ParameterType::PARAMETER_INTEGER);
+  lidar_filt_upper_ = this->get_parameter(param_name).as_int();
 
   RCLCPP_INFO(get_logger(), "Scan modifier node started!");
+  RCLCPP_INFO(get_logger(), "Scan size: %d", lidar_filt_upper_);
 }
 
 void ScanModifierNode::config_sub_callback(const std_msgs::msg::UInt16MultiArray::SharedPtr config)
@@ -52,33 +70,20 @@ void ScanModifierNode::config_sub_callback(const std_msgs::msg::UInt16MultiArray
 
 void ScanModifierNode::scan_sub_callback(const sensor_msgs::msg::LaserScan::SharedPtr laser_msg)
 {
+  constexpr auto between = [](const auto& val, const auto& lower, const auto& upper) {
+    return val >= lower && val <= upper;
+  };
+
   const auto& logger = get_logger();
-  auto level = rcutils_logging_get_logger_effective_level(logger.get_name());
+  RCLCPP_DEBUG(get_logger(), "Data size: %ld. Scan config: %d, %d", laser_msg->ranges.size(), lidar_filt_lower_,
+               lidar_filt_upper_);
 
-  if (level == RCUTILS_LOG_SEVERITY_DEBUG)
+  for (size_t i = 0; i < laser_msg->ranges.size(); i++)
   {
-    RCLCPP_DEBUG(get_logger(), "OG msg:");
-    print_laser(*laser_msg, get_logger());
-  }
-
-  RCLCPP_DEBUG(get_logger(), "OG sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
-  RCLCPP_DEBUG(get_logger(), "Scan config: %d, %d", lidar_filt_lower_, lidar_filt_upper_);
-
-  auto laser_size = laser_msg->ranges.size();
-  laser_msg->angle_min = static_cast<float>(lidar_filt_lower_) / laser_size * 2 * M_PI;
-  laser_msg->angle_max = static_cast<float>(lidar_filt_upper_) / laser_size * 2 * M_PI;
-  auto result = calculate_lidar_ranges(lidar_filt_lower_, lidar_filt_upper_, laser_msg->ranges);
-
-  // TODO: Intensities are being incorrectly configured but since it is unused, it is OK for now
-  laser_msg->intensities.resize(result.size());
-
-  laser_msg->ranges = std::move(result);
-  RCLCPP_DEBUG(get_logger(), "New sizes: %ld, %ld", laser_msg->ranges.size(), laser_msg->intensities.size());
-
-  if (level == RCUTILS_LOG_SEVERITY_DEBUG)
-  {
-    RCLCPP_DEBUG(get_logger(), "New msg:");
-    print_laser(*laser_msg, get_logger());
+    if (!between(i, lidar_filt_lower_, lidar_filt_upper_))
+    {
+      laser_msg->ranges[i] = -std::numeric_limits<float>::infinity();
+    }
   }
 
   publisher_->publish(*laser_msg);
