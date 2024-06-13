@@ -22,12 +22,14 @@ RUN pip3 install matplotlib transforms3d
 
 RUN apt-get update && apt-get install -y --no-install-recommends tmux ros-dev-tools
 
-COPY create3.patch /tmp/create3.patch
+COPY docker/create3.patch /tmp/create3.patch
 RUN cd /opt/ros/humble/share/irobot_create_description/urdf && \
     patch < /tmp/create3.patch
 
-COPY setup.bash /opt/setup.bash
-COPY entrypoint.sh /opt/entrypoint.sh
+COPY docker/setup.bash /opt/setup.bash
+COPY docker/entrypoint.sh /opt/entrypoint.sh
+RUN chmod a+rx /opt/entrypoint.sh\
+    && chmod a+rx /opt/setup.bash
 
 ENTRYPOINT ["/opt/entrypoint.sh"]
 
@@ -66,7 +68,7 @@ RUN echo Defaults secure_path = /opt/ros/humble/bin:/usr/local/sbin:/usr/local/b
 RUN apt update && apt install -y jupyter-notebook  python3-jupyter-server
 RUN cp -r /usr/share/jupyter/kernels/python3 /usr/share/jupyter/kernels/python3ros
 
-COPY kernel.json /usr/share/jupyter/kernels/python3ros/kernel.json
+COPY docker/kernel.json /usr/share/jupyter/kernels/python3ros/kernel.json
 
 RUN apt update && apt install -y ros-humble-turtlebot3-gazebo ros-humble-turtlebot3-teleop
 
@@ -74,3 +76,26 @@ RUN echo "source /opt/entrypoint.sh" >> /root/.profile
 USER ${USERNAME}
 RUN echo "source /opt/entrypoint.sh" >> /home/${USERNAME}/.bashrc
 
+FROM dev AS deploy
+
+USER ${USERNAME}
+COPY --chown=${USERNAME} scan_relay_ws/ /opt/scan_relay_ws/
+
+WORKDIR /opt/scan_relay_ws/
+
+RUN users
+
+RUN source /opt/entrypoint.sh\
+    && rosdep update\
+    && rosdep install -i --from-path spin_interfaces --rosdistro humble\
+    && colcon build --packages-select spin_interfaces
+USER root
+RUN echo "source /opt/scan_relay_ws/install/setup.bash" >> "/opt/setup.bash"
+USER ${USERNAME}
+RUN source /opt/entrypoint.sh\
+    && rosdep install -i --from-path demo_bringup --rosdistro humble\
+    && rosdep install -i --from-path scan_modifier --rosdistro humble\
+    && rosdep install -i --from-path spinning_controller --rosdistro humble\
+    && rosdep install -i --from-path topic_param_bridge --rosdistro humble
+RUN source /opt/entrypoint.sh\
+    && colcon build --packages-select demo_bringup scan_modifier spinning_controller topic_param_bridge

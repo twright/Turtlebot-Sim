@@ -2,7 +2,8 @@ services:
   base:
     image: turtlebot4:base
     build:
-      context: .
+      context: ..
+      dockerfile: docker/Dockerfile
       target: base
     # command: tmux
     stdin_open: true
@@ -18,7 +19,8 @@ services:
     extends: base
     image: turtlebot4:dev
     build:
-      context: .
+      context: ..
+      dockerfile: docker/Dockerfile
       target: dev
       args:
         - UID=${UID:-1000}
@@ -32,6 +34,7 @@ services:
       # - ignitiondata:/root/.ignition
       # - rosdata:/root/.ros
       - ${XAUTHORITY:-$HOME/.Xauthority}:/home/${USERNAME:-devuser}/.Xauthority
+      - /dev/shm:/dev/shm
       # - /dev/dri:/dev/dri
   devnogpu:
     extends: dev
@@ -61,6 +64,56 @@ services:
   simnvidia:
     extends: devnvidia
     command: ros2 launch turtlebot4_ignition_bringup turtlebot4_ignition.launch.py world:=maze slam:=true nav2:=true rviz:=true
+  deploy:
+    extends: dev
+    image: turtlebot4:deploy
+    build:
+      context: ..
+      target: deploy
+      dockerfile: docker/Dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${UID:-1000}
+        - USERNAME=${USERNAME:-devuser}
+    user: ${USERNAME:-devuser}
+    command: sleep infinity
+  deploynogpu:
+    extends: deploy
+    environment:
+      - LIBGL_ALWAYS_SOFTWARE=1
+  deploymesa:
+    extends: deploy
+    volumes:
+      - /dev/dri:/dev/dri
+  deploynvidia:
+    extends: deploy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    environment:
+      - NVIDIA_DRIVER_CAPABILITIES=all
+  simdeploynogpu:
+    extends: deploynogpu
+    command: ros2 launch demo_bringup sim_demo_tb4.launch.py
+  simdeploymesa:
+    extends: deploymesa
+    command: ros2 launch demo_bringup sim_demo_tb4.launch.py
+  simdeploynvidia:
+    extends: deploynvidia
+    command: ros2 launch demo_bringup sim_demo_tb4.launch.py
+  rvizlivenvidia:
+    extends: devnvidia
+    command: ros2 launch turtlebot4_viz view_robot.launch.py
+  rvizlivemesa:
+    extends: devmesa
+    command: ros2 launch turtlebot4_viz view_robot.launch.py
+  rvizlivenogpu:
+    extends: devmesa
+    command: ros2 launch turtlebot4_viz view_robot.launch.py
 
 volumes:
   rosuserdata:
