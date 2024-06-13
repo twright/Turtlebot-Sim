@@ -8,7 +8,7 @@
   <license>Apache-2.0</license>
 
   <exec_depend>rclpy</exec_depend>
-  <exec_depend>spin_interface</exec_depend>
+  <exec_depend>spin_interfaces</exec_depend>
   <exec_depend>rcl_interfaces</exec_depend>
   <exec_depend>ros2cli</exec_depend>
   <exec_depend>ros2node</exec_depend>
