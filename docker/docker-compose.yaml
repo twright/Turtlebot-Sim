@@ -10,6 +10,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
+      - /dev/shm:/dev/shm
     environment:
       - DISPLAY=${DISPLAY}
     network_mode: host
