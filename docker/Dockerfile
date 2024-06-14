@@ -45,7 +45,7 @@ WORKDIR /ws
 
 # Install extra tools for development
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gdb gdbserver vim
+    gdb gdbserver vim zsh
 
 # Create new user and home directory
 RUN groupadd --gid $GID $USERNAME \
